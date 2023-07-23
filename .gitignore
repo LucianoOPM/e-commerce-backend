@@ -1,0 +1,12 @@
+node_modules/
+.env*
+/TODO.md
+errors.log
+compleja.json
+simple.json
+testPerformance.json
+testResult.html
+config.yaml
+kubeusers.yaml
+Dockerfile
+.dockerignore

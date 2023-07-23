@@ -1,0 +1,68 @@
+body{
+    background-color: #A0C49D;
+}
+
+nav div{
+    display: inline-block;
+}
+
+nav input[type='search']{
+    width: 500px;
+}
+
+nav a{
+    position: relative;
+    left: 3%;
+}
+
+.login-button{
+    position: relative;
+    right: 100%;
+}
+
+.logout-button{
+    position: relative;
+    right: 10%;
+}
+
+.user-info{
+    position: relative;
+    right: 10%;
+}
+
+.custom-nav-ul{
+    position: relative;
+    left: 3%;
+}
+
+.custom-navbar{
+    background-color: #E1ECC8;
+    border-bottom: 3px solid black;
+    height: 100px;
+}
+
+.card-position{
+    position: relative;
+    left: 33%;
+    margin-top: 10% ;
+}
+
+a{
+    text-decoration: none;
+    color: black;
+}
+
+.product{
+    background-color: #C4D7B2;
+    position: relative;
+    left: 33%;
+    border: 2px solid black;
+}
+
+.img-size{
+    width: 250px;
+    height: 150px;
+    position: relative;
+    left: 2%;
+    top: 10%;
+}

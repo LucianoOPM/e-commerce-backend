@@ -1,0 +1,27 @@
+body{
+    background-color: #A0C49D;
+}
+
+header{
+    text-align: center;
+    background-color: #E1ECC8;
+    border-bottom: 3px solid black;
+    height: 100px;
+    width: 100vw;
+}
+
+.change-form{
+    position: absolute;
+    left: 15%;
+    top: 20%;
+}
+
+.btn{
+    position: relative;
+    left: 50%;
+}
+
+.test{
+    border: solid red 1px;
+    max-height: min-content;
+}

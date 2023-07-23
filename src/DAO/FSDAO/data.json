@@ -1,0 +1,54 @@
+[
+  {
+    "id": 1,
+    "title": "Ryzen 5 3600",
+    "description": "Procesador AMD Ryzen 5 3600",
+    "price": 3500,
+    "thumbnail": [
+      "https://m.media-amazon.com/images/I/81b75EQJrgL._AC_SX522_.jpg"
+    ],
+    "code": "RYZ-5-3600",
+    "stock": 90,
+    "status": true,
+    "category": "CPU"
+  },
+  {
+    "id": 2,
+    "title": "Intel Core i5-11400",
+    "description": "Procesador Intel Core i5-11400",
+    "price": 5000,
+    "thumbnail": [
+      "https://www.cyberpuerta.mx/img/product/XL/CP-INTEL-BX8070110400F-1.png"
+    ],
+    "code": "BX8070811400",
+    "stock": 90,
+    "status": true,
+    "category": "CPU"
+  },
+  {
+    "id": 3,
+    "title": "Nvidia 1660s",
+    "description": "Tarjeta de vídeo Nvidia 1660s",
+    "price": 4000,
+    "thumbnail": [
+      "https://www.cyberpuerta.mx/img/product/XL/CP-GIGABYTE-GV-N1660OC-6GD-1.png"
+    ],
+    "code": "NVI-1660s",
+    "stock": 15,
+    "status": true,
+    "category": "GPU"
+  },
+  {
+    "id": 4,
+    "title": "Memoria RAM 2x8",
+    "description": "Mamorias RAM GSKILL 16GB 2x8GB",
+    "price": 2000,
+    "thumbnail": [
+      "https://m.media-amazon.com/images/I/61l4EStxhnL._AC_SL1274_.jpg"
+    ],
+    "code": "RAM-GSKILL",
+    "stock": 15,
+    "status": true,
+    "category": "RAM"
+  }
+]

@@ -1,0 +1,31 @@
+body{
+    background-color: #A0C49D
+}
+
+.nav-header{
+    height: 100px;
+    background-color: #E1ECC8;
+    border-bottom: 3px solid black;
+}
+
+.row-content{
+    position: relative;
+    top: 20%;
+}
+
+.form-products{
+    width: 500px;
+    height: auto;
+    background-color: #C4D7B2;
+    border: black 3px solid;
+}
+
+.check-input{
+    display: inline-block;
+    position: relative;
+    left: 40%;
+}
+
+.test{
+    border: solid red 1px;
+}

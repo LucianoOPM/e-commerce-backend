@@ -1,0 +1,73 @@
+body{
+    background-color: #A0C49D;
+}
+
+.custom-navbar{
+    background-color: #E1ECC8;
+    border-bottom: 3px solid black;
+    height: 100px;
+}
+
+nav div{
+    display: inline-block;
+}
+
+nav input[type='search']{
+    width: 500px;
+}
+
+nav span{
+    position: relative;
+    left: 4%;
+}
+
+.custom-nav-ul{
+    position: relative;
+    left: 5%;
+}
+
+.products{
+    background-color: #C4D7B2;
+    position: relative;
+    left: 33%;
+    border: 2px solid black;
+}
+
+h5 a{
+    text-decoration: none;
+    color: black;
+}
+
+.login-button{
+    position: relative;
+    right: 100%;
+}
+
+.user-info{
+    position: relative;
+    right: 15%;
+}
+
+.logout-button{
+    position: relative;
+    right: 5%;
+}
+
+.buy-button{
+    height: 30px;
+    margin: 2px;
+    padding: 0 10px;
+}
+
+.page-buttons{
+    position:relative;
+    left: 50%;
+}
+
+.img-size{
+    width: 300px;
+    height: 200px;
+    position: relative;
+    left: 2%;
+    top: 5%;
+}

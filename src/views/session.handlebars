@@ -1,0 +1,14 @@
+<header>
+    <nav>
+        {{#if showLogin}}
+        <a href="/views/session/login">Login</a>
+        <a href="/views/session/register">Registrar</a>
+        <a href="/views/session/restorepass">Restaurar contraseña</a>
+        {{else}}
+        <a href="/views/session/perfil">Mi Perfil</a>
+        <form action="/api/session/logout" method="post">
+            <button>Cerrar sesion</button>
+        </form>
+        {{/if}}
+    </nav>
+</header>

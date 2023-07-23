@@ -1,0 +1,39 @@
+body{
+    background: #355C7D;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #C06C84, #6C5B7B, #355C7D);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #C06C84, #6C5B7B, #355C7D); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-repeat: no-repeat;
+}
+
+.login{
+    width: 400px;
+    height: min-content;
+    padding: 20px;
+    border-radius: 12px;
+    background: white;
+}
+
+.login h1{
+    font-size: 36px;
+    margin-bottom: 25px;
+}
+
+.login form{
+    font-size: 20px;
+}
+
+.login form .form-group{
+    margin-bottom: 12px;
+}
+
+button{
+    font-size: 20px;
+    margin-top: 15px;
+}
+
+.github-login{
+    margin-top: 15px;
+}

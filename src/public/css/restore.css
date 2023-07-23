@@ -1,0 +1,16 @@
+body{
+    background-color: #A0C49D;
+}
+
+header{
+    text-align: center;
+    background-color: #E1ECC8;
+    border-bottom: 3px solid black;
+    height: 100px;
+    width: 100vw;
+}
+
+.custom{
+    margin-top: 10%;
+    width: 500px;
+}

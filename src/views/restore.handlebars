@@ -1,0 +1,26 @@
+<header>
+  <h1>Restaura tu contraseña</h1>
+</header>
+<main>
+  <div class="container-md custom">
+    <form id="restoreForm">
+      <div class="mb-3">
+        <label for="reset-pass" class="form-label">Correo:</label>
+        <input
+          type="email"
+          class="form-control"
+          id="reset-pass"
+          aria-describedby="emailHelp"
+        />
+        <div id="emailHelp" class="form-text">Ingresa tu email y en breves
+          recibirás un enlace para restaurar tu contraseña.</div>
+      </div>
+      <button
+        id="restoreButton"
+        type="submit"
+        class="btn btn-primary"
+      >Submit</button>
+    </form>
+  </div>
+</main>
+<script src="/static/js/{{script}}"></script>

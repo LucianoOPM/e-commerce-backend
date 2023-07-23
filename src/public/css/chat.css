@@ -1,0 +1,32 @@
+body{
+    background-color: #A0C49D;
+}
+
+.nav-container{
+    height: 100px;
+    border-bottom: black 3px solid;
+    background-color: #E1ECC8;
+}
+
+.title-container{
+    position: relative;
+    left: 45%;
+    width: 140px;
+    height: min-content;
+    text-align: center;
+}
+
+.ul-container{
+    position: relative;
+    left: 5%;
+    font-size: large;
+}
+
+.logout-btn{
+    position: relative;
+    right: 5%;
+}
+
+.test{
+    border: 1px red solid;
+}

@@ -1,0 +1,16 @@
+[
+  {
+    "first_name": "Sheyla Tamara",
+    "last_name": "Velazquez Espinoza",
+    "email": "sheyla@gmail.com",
+    "password": "facil123",
+    "age": "1999/04/21"
+  },
+  {
+    "first_name": "Luciano de Jesus",
+    "last_name": "Perez Montalvan",
+    "email": "lperez@gmail.com",
+    "password": "facil123",
+    "age": "1999/04/21"
+  }
+]
