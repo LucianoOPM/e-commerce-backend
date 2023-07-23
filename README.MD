@@ -3,14 +3,14 @@ Linea 5: Primera pre entrega.
 Linea 47: Segunda pre entrega
 Linea 106: Login por formulario
 
-# /-------------------------------------------------------------IMPORTANTE-------------------------------------------------/
+### /-------------------------------------------------------------IMPORTANTE-------------------------------------------------/
 
 TO START: npm run dev
 Base de datos: Mongo de manera local
 nombre de la base de datos: 'ecommerce'
 colecciones: 'carts', 'messages', 'products', 'sessions', 'usuarios'
 
-# /------------------------------------------------------PRIMERA PRE ENTREGA--------------------------------------------/
+### /------------------------------------------------------PRIMERA PRE ENTREGA--------------------------------------------/
 
 ¿Cómo usar?
 
@@ -46,7 +46,7 @@ DELETE: localhost:8080/api/carts/IDMONGOCARRITO
 
 Elimina un carrito completo
 
-# /----------------------------------------------------------------SEGUNDA PRE ENTREGA-----------------------------------------------------------/
+### /----------------------------------------------------------------SEGUNDA PRE ENTREGA-----------------------------------------------------------/
 
 TODAS LAS URL ESCUCHAN EN localhost:8080
 Sé que que me faltan rutas y que tengo rutas demás, eso lo iré cambiando con el paso del tiempo.
@@ -102,7 +102,7 @@ URL: views/products
 
 Visualiza una lista de productos con el titulo y la imagen (Si tiene una) y si se le da click al nombre del producto, te dirige a otra página dónde se despliega más información del producto y aparece el botón de agregar al carrito (De momento no hace nada más que mostrar un console.log con el ID del producto.)
 
-# /----------------------------------------------------------------DESAFIO ENTREGABLE: Login por formulario.-----------------------------------------------------------/
+### /----------------------------------------------------------------DESAFIO ENTREGABLE: Login por formulario.-----------------------------------------------------------/
 
 Rutas:
 
@@ -122,7 +122,7 @@ GET /views/products
 
 No muestra nada si el usuario no está logueado te redirige a el inicio de sesion, y una ves adentro, te permite cerrar sesión.
 
-# /--------------------------------------------------------------------------Refactor de login---------------------------------------------------------------------------/
+### /--------------------------------------------------------------------------Refactor de login---------------------------------------------------------------------------/
 
 Al registrarte mediante el formulario, generas una contraseña, que siendo revisada en la base de datos, se hashea, y te dirige automaticamente a la página de login cuando la cuenta fue creada correctamente, si no, la página se mantiene en la página del registro para que lo intentes nuevamente.
 
