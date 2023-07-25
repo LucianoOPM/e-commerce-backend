@@ -1,8 +1,8 @@
 {
-  "name": "websocket_y_handlebars",
+  "name": "e-commerce",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "APP.js",
   "scripts": {
     "start": "node src/main.js --mode production",
     "dev": "nodemon src/main.js --mode development"
