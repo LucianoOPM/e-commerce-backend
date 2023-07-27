@@ -25,31 +25,34 @@ addBtn.addEventListener('click', (e) => {
         .then(res => socket.emit("client:newProducts", res))
         .catch(err => console.log(err))
 
-
     form.reset()
 })
 
 
 socket.on('server:renderProducts', async (data) => {
-    const { docs } = data
+    const { products: serverProducts, pagination } = data
     let products = document.querySelector("#newProducts")
+    const pages = document.querySelector('#pagination')
+    console.log(pagination)
+    pages.innerHTML = `
+        ${pagination.hasPrevPage ? "<button>Anterior</button>" : "<button disabled>Anterior</button>"}
+        ${pagination.totalDocs}
+        ${pagination.hasNextPage ? "<button>Siguiente</button>" : "<button disabled>Siguiente</button>"}
+    `
 
-    let renderProducts = ''
-
-    for (let value of docs) {
-        renderProducts += `
-        <h2>${value.title}</h2>
-        <h3>${value.description}</h3>
-        <p>ID: ${value._id}</p>
-        <p>Costo: ${value.price}</p>
-        <p>Disponibles: ${value.stock}</p>
-        <p>${value.category}</p>
-        <img src="${value.thumbnail}">
-        <hr>
-        `
-    }
+    let renderProducts = serverProducts.map(products => {
+        console.log(products)
+        return `
+        <h2>${products.title}</h2>
+        <h3>${products.description}</h3>
+        <img src="${products.thumbnails}">
+        <p>ID: ${products.idProduct}</p>
+        <p>Costo: ${products.price}</p>
+        <p>Disponibles: ${products.stock}</p>
+        <p>${products.category}</p>
+        <hr>`
+    })
     products.innerHTML = renderProducts
-
 })
 
 const [idProduct, delButton] = deleteProduct
