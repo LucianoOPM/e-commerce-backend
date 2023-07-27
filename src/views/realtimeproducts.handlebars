@@ -2,8 +2,18 @@
   <div class="container-fluid text-center nav-header mb-4">
     <div class="row row-content">
       <div class="col">
+        <h1>E-Commerce</h1>
+      </div>
+      <div class="col">
         <h1>Lista de productos</h1>
       </div>
+      <span class="col">
+        <ul>
+          <li>Chat</li>
+          <li>Products</li>
+          <li>Cart</li>
+        </ul>
+      </span>
     </div>
   </div>
 </header>
@@ -135,17 +145,8 @@
     </div>
 
   </div>
-  <div id="newProducts">
-    {{#each docs}}
-      <h2>Producto: {{this.title}}</h2>
-      <h3>Descripción: {{this.description}}</h3>
-      <p>ID: {{this._id}}</p>
-      <p>Costo: {{this.price}}</p>
-      <p>Disponible: {{this.status}}</p>
-      <img src="{{this.thumbnail}}" />
-      <hr />
-    {{/each}}
-  </div>
+  <div id="newProducts"></div>
+  <div id="pagination"></div>
 
   <div class="delete">
     <h1>Eliminar productos</h1>
