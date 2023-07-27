@@ -29,3 +29,10 @@ body{
 .test{
     border: solid red 1px;
 }
+
+li{
+    list-style: none;
+    display: inline-flex;
+    font-size: 30px;
+    padding: 0 10px;
+}
