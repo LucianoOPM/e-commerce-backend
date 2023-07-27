@@ -1,19 +1,13 @@
+const { chatService } = require("../services")
+
 const chatSocket = io => {
     io.on('connection', async socket => {
-
-        socket.on('client:createUser', async (data) => {
-            await chatMongo.newChat({ user: data })
-        })
-
-        socket.on('client:newMesage', async (data) => {
-            await chatMongo.addMessage(data)
-
-            const mensajes = []
-            const fetchMessage = await chatMongo.readLastMessage(data.userName)
-            mensajes.push(fetchMessage)
-
-            io.emit('server:chatHistory', mensajes)
-        })
+        try {
+            const messages = await chatService.getLastMessage('Ana')
+            io.emit('message', messages)
+        } catch (error) {
+            return error.message
+        }
     })
 }
 

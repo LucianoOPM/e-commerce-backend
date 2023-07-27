@@ -11,6 +11,14 @@ class ChatManagerMongo {
             return `ERROR: ${error}`
         }
     }
+
+    getMessages = async () => {
+        try {
+            return await messageModel.find({})
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }
     addMessage = async (data) => {
         try {
             const { userName, newMsg } = data
@@ -34,4 +42,4 @@ class ChatManagerMongo {
     }
 }
 
-module.exports = new ChatManagerMongo()
+module.exports = ChatManagerMongo

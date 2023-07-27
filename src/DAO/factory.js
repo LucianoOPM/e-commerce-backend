@@ -7,19 +7,22 @@ const FACTORY = {
         ProductDAO: require('./MongoDAO/productMMongo'),
         UserDAO: require('./MongoDAO/usersManagerM'),
         CartDAO: require('./MongoDAO/cartManagerM'),
-        TicketDAO: require('./MongoDAO/ticketDAO')
+        TicketDAO: require('./MongoDAO/ticketDAO'),
+        ChatDAO: require('./MongoDAO/chatManagerM')
     },
     FILESYSTEM: {
         UserDAO: require('./FSDAO/userDAO'),
         ProductDAO: require('./FSDAO/proManJSON'),
         CartDAO: require('./FSDAO/cartsManager'),
-        TicketDAO: require('./FSDAO/ticketFS')
+        TicketDAO: require('./FSDAO/ticketFS'),
+        ChatDAO: require('./FSDAO/chat.dao')
     },
     MEMORY: {
         ProductDAO: require('./MemoryDAO/products.DAO'),
         UserDAO: require('./MemoryDAO/users.dao'),
         CartDAO: require('./MemoryDAO/carts.dao'),
-        TicketDAO: require('./MemoryDAO/TicketDao')
+        TicketDAO: require('./MemoryDAO/TicketDao'),
+        ChatDao: require('./MemoryDAO/chat.dao')
     }
 }
 

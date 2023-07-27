@@ -1,7 +1,7 @@
 //Importaciones
 const express = require('express')
 const hbs = require('express-handlebars')
-const { Server: serverHTTP } = require('http')
+const { Server: serverHTTP } = require('node:http')
 const { Server: serverIO } = require('socket.io')
 const cookieParser = require('cookie-parser')
 const main = require('./routers/routes.js')
@@ -11,6 +11,8 @@ const cors = require('cors')
 const errorMiddleware = require('./middleware/errors/indexError.js')
 const addLogger = require('./middleware/logger.midd.js')
 const logger = require('./config/logger.js')
+const webSocket = require('./utils/socketIo.js')
+const chatSocket = require('./utils/chatSocket.js')
 
 //Ejecucion de funciones.
 const app = express()
@@ -32,6 +34,8 @@ passport.use(passport.initialize())
 //routers
 app.use(addLogger)
 app.use(main)
+webSocket(io)
+chatSocket(io)
 app.use(errorMiddleware)
 
 /* exports.initServer = _ =>  */
