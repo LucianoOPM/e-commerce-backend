@@ -1,6 +1,7 @@
 const { Router } = require('express')
 const router = Router()
 const compression = require('express-compression')
+const swagger = require('swagger-ui-express')
 
 //API v2 imports
 const ProductsV2 = require('./product.router.js')
@@ -24,6 +25,7 @@ const mockingUsers = new MockingUsers()
 
 //API v2 endpoints
 router.use(compression({ brotli: { enabled: true, zlib: {} } }))
+router.use('/docs', swagger.serve)
 router.use('/', viewsv2.getRouter())//Ruta de vistas
 router.use('/api/products', productsv2.getRouter())//Funciona
 router.use('/api/users', usersv2.getRouter())//Funciona
