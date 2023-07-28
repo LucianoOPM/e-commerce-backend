@@ -3,7 +3,6 @@ const { generateToken, signUrlToken } = require("../config/passportJWT");
 const { userService, cartService } = require("../services");//instancia del manager de mongo
 const { createHash, isValidPass } = require("../utils/bcrypthash");
 const querySearch = require("../utils/querySearch");
-const logger = require('../config/logger.js')
 const sendMail = require('../utils/sendEmail.js')
 
 class UserController {
@@ -177,7 +176,8 @@ class UserController {
         try {
             const { body: { email } } = req
 
-            const { nonSensitiveUser: { userID } } = await userService.findUser(email)
+            const user = await userService.findUser(email)
+            const userID = user?.nonSensitiveUser.userID
 
             if (!userID) return res.status(404).sendUserError("Error.")
 
@@ -202,7 +202,7 @@ class UserController {
             sendMail(email, "Change Password", html)
             res.status(200).sendSuccess("Mail enviado correctamente")
         } catch (error) {
-            res.status(500).sendServerError(error.messsage)
+            res.status(500).sendServerError(error.message)
         }
     }
 
