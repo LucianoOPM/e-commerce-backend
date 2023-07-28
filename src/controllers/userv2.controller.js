@@ -6,7 +6,7 @@ const querySearch = require("../utils/querySearch");
 const sendMail = require('../utils/sendEmail.js')
 
 class UserController {
-    get = async (req, res) => {
+    get = async (req, res, next) => {
         try {
             //recuperamos las keys del objeto req.query
             const queryKeys = Object.keys(req.query)
@@ -21,7 +21,7 @@ class UserController {
             //Si el req.query no viene vacio, busca que venga con las palabras permitidas
             const SEARCH_KEYS = ["role", "limit", "sort", "page"]
             const successQuery = queryKeys.some(keys => SEARCH_KEYS.includes(keys))
-            if (!successQuery) return res.status(400).sendServerError('Some keys missmatch with accepted search keys')
+            if (!successQuery) throw new Error('Some keys missmatch with accepted search keys')
 
             //Si contiene las palabras permitidas, ejecuta la función para formar la query
             const searchQuery = querySearch(req.query, "users")
@@ -32,17 +32,17 @@ class UserController {
             //Arroja el resultado a la paginación
             res.status(200).sendSuccess(searchUser)
         } catch (error) {
-            res.status(500).sendServerError(error.message)
+            next(error)
         }
     }
 
-    getById = async (req, res) => {
+    getById = async (req, res, next) => {
         try {
             //Extrae el UID de los parametros de request
             const { UID } = req.params
 
             //Valida que el UID sea un ObjectID valido
-            if (!isValidObjectId(UID)) return res.status(400).sendServerError('UID is not an accepted ObjectID')
+            if (!isValidObjectId(UID)) throw new Error('UID is not an accepted ObjectID')
 
             //Efectua la busqueda por UID
             const user = await userService.findUser(UID)
@@ -53,11 +53,11 @@ class UserController {
             //Arroja el resultado
             res.status(200).sendSuccess(user.nonSensitiveUser)
         } catch (error) {
-            res.status(500).sendServerError(error.message)
+            next(error)
         }
     }
 
-    post = async (req, res) => {
+    post = async (req, res, next) => {
         try {
             //Extrae los valores del req.body
             const { first_name, last_name, email, password, birthdate } = req.body
@@ -94,11 +94,11 @@ class UserController {
             //Entrega el token a la cookie "coderCookieToken" y le asigna la configuración
             res.status(200).sendSuccess({ message: 'User registered Successfully', token })
         } catch (error) {
-            res.status(500).sendServerError(error.message)
+            next(error)
         }
     }
 
-    put = async (req, res) => {
+    put = async (req, res, next) => {
         try {
             //Valores que se permitirán cambiar al usuario
             const acceptedBody = ["first_name", "last_name", "email", "role", "birthdate", "password"]
@@ -128,7 +128,7 @@ class UserController {
                 maxAge: 60 * 60 * 100
             }).sendSuccess('User updated')
         } catch (error) {
-            res.status(500).sendServerError(error.message)
+            next(error)
         }
     }
 
@@ -145,22 +145,22 @@ class UserController {
             nonSensitiveUser.role == "user" ? nonSensitiveUser.role = "premium" : nonSensitiveUser.role === "premium" ? nonSensitiveUser.role = "user" : null
             const newRole = await userService.updateUser(UID, nonSensitiveUser)
 
-            res.status(200).sendSuccess({ response: "ok", newRole })
+            res.status(200).sendSuccess(newRole)
         } catch (error) {
             next(error)
         }
     }
 
-    delete = async (req, res) => {
+    delete = async (req, res, next) => {
         try {
             //extrae el UID de los params
             const { params: { UID } } = req
 
             //Valida que el UID sea un objectID válido
-            if (!isValidObjectId(UID)) return res.status(400).sendServerError('UID is not a valid ObjectId')
+            if (!isValidObjectId(UID)) throw new Error('UID is not a valid ObjectId')
             const { nonSensitiveUser: { userID, cartID } } = await userService.findUser(UID)
 
-            if (!userID) return res.status(400).sendServerError('User has not found')
+            if (!userID) throw new Error('User has not found')
 
             //Elimina al usuario según el UID otorgado
             await cartService.deleteCart(cartID)
@@ -168,11 +168,11 @@ class UserController {
 
             res.status(200).sendSuccess('User deleted successfully')
         } catch (error) {
-            res.status(500).sendServerError(error.message)
+            next(error)
         }
     }
 
-    restore = async (req, res) => {
+    restore = async (req, res, next) => {
         try {
             const { body: { email } } = req
 
@@ -202,24 +202,24 @@ class UserController {
             sendMail(email, "Change Password", html)
             res.status(200).sendSuccess("Mail enviado correctamente")
         } catch (error) {
-            res.status(500).sendServerError(error.message)
+            next(error)
         }
     }
 
-    newPass = async (req, res) => {
+    newPass = async (req, res, next) => {
         try {
             const { params: { UID }, body: { password } } = req
             const { nonSensitiveUser: { email }, password: hashedPassword } = await userService.findUser(UID)
 
             const validPassword = await isValidPass(password, hashedPassword)
-            if (validPassword) return res.status(409).sendUserError("Passwords are equal")
+            if (validPassword) throw new Error("Passwords are equal")
 
             const newPassword = await createHash(password)
             await userService.changePassword({ email, newPassword })
 
             res.status(200).sendSuccess('Se cambió la contraseña')
         } catch (error) {
-            res.status(500).sendServerError(error.message)
+            next(error)
         }
     }
 }
