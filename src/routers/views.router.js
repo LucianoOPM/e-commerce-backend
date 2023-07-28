@@ -3,12 +3,15 @@ const ViewsController = require("../controllers/viewsv2.controller");
 const alreadyLogged = require("../middleware/alreadyLogged");
 const RouterClass = require("./RouterClass");
 const validUrlToken = require('../middleware/validateUrlToken')
+const swagger = require('swagger-ui-express')
+const swaggerJSOption = require('../config/swagger-js-doc')
 
 const views = new ViewsController()
 
 class ViewsRouter extends RouterClass {
     /*QUIEN PUEDE ACCEDER A LAS VISTAS*/
     init() {
+        this.get('/docs', ['PUBLIC'], swagger.setup(swaggerJSOption))
         /*Views de products*/
         this.get('/products', ['PUBLIC'], authHeaders, views.products)//Funciona
         this.get('/products/:PID', ['PUBLIC'], authHeaders, views.productsById)//Funciona
