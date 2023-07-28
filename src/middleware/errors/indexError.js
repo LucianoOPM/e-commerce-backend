@@ -8,7 +8,7 @@ const errorMiddleware = (err, req, res, next) => {
     } else {
         res.status(400).sendUserError({ name: err.name, message: err.message })
     }
-    logger.fatal({ err, message: err.message })
+    logger.fatal({ message: err.message })
 }
 
 module.exports = errorMiddleware
