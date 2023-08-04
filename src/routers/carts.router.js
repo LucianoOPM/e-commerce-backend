@@ -9,10 +9,10 @@ class CartRouter extends RouterClass {
         this.post('/', ['PUBLIC'], cart.newCart)//generar un carrito nuevo
         this.get('/:CID', ['PUBLIC'], cart.get)//Funciona
         this.put('/:CID', ['USER', 'ADMIN', 'PREMIUM'], cartValidator, cart.addProducts)//Funciona
-        this.post('/:CID/purchase', ['USER', "ADMIN"], cart.purchase)//Funciona
+        this.delete('/:CID', ['PUBLIC'], cart.delete)//Funciona
         this.put('/:CID/product/:PID', ['PUBLIC'], cart.updateProduct)//Funciona
         this.delete('/:CID/product/:PID', ['PUBLIC'], cart.deleteProduct)//Funciona
-        this.delete('/:CID', ['PUBLIC'], cart.delete)//Funciona
+        this.post('/:CID/purchase', ['USER', "ADMIN"], cart.purchase)//Funciona
     }
 }
 
