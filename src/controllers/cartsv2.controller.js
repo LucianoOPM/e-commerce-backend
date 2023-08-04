@@ -10,18 +10,21 @@ class CartController {
             res.status(200).sendSuccess({ message: 'Nuevo carrito generado', cartID: _id.toString() })
         } catch (error) {
             logger.error(error.message)
-            res.status(500).sendServerError("Cart not generated")
+            res.status(500).sendServerError(error.message)
         }
     }
 
     get = async (req, res) => {
         try {
             const { CID } = req.params
-            if (!isValidObjectId(CID)) return res.status(400).sendServerError('Cart isn\'t a valid objectID')
+            if (!isValidObjectId(CID)) throw new Error('Cart isn\'t a valid objectID')
 
-            const { cartID, products } = await cartService.get(CID)
+            const cartInfo = await cartService.get(CID)
+            const products = cartInfo?.products
 
-            res.status(200).sendSuccess({ status: 'ok', cartID, products })
+            if (!products) throw new Error("Cart is not found")
+
+            res.status(200).sendSuccess({ CID, products })
         } catch (error) {
             logger.error(error.message)
             res.status(500).sendServerError(error.message)
@@ -33,17 +36,17 @@ class CartController {
             //Destructuración de los datos a manejar, id del carrito, id del producto y la cantidad que por default siempre será 1
             const { params: { CID }, body, user: { userID } } = req
 
-            if (body.length === 0) return res.status(400).sendUserError('Empty cart')
+            if (body.length === 0) throw new Error('Empty cart')
             let { products: cartProducts } = await cartService.get(CID) ?? {}
 
-            if (!cartProducts) return res.status(404).sendUserError("Cart is not found")
+            if (!cartProducts) throw new Error("Cart is not found")
             //Recorrer el arreglo products en busca del req.body product, si no lo encuentra pushearlo, si lo encuentra aumentar su cantidad
 
             let ownProduct;
             //Valida que el ID del producto y del carrito sean un objectID valido.
             for (let item of body) {
                 const { product, quantity } = item
-                if (!isValidObjectId(CID) || !isValidObjectId(product)) return res.status(400).sendUserError("Cart ID or Product ID is not a valid ID")
+                if (!isValidObjectId(CID) || !isValidObjectId(product)) throw new Error("Cart ID or Product ID is not a valid ID")
 
                 const productExists = await productService.getById(product)
                 if (productExists.owner.toString() !== userID) {
@@ -72,8 +75,9 @@ class CartController {
         try {
             const { body: { quantity }, params: { CID, PID } } = req
 
-            if (!quantity) return res.status(400).sendUserError('Quantity not specified')
-            if (!isValidObjectId(CID) && !isValidObjectId(PID)) return res.status(400).sendServerError('Some ID is not an valid ObjectID')
+            if (!quantity) throw new Error('Quantity not specified')
+            if (quantity <= 0) throw new Error("Quantity can't be less than one")
+            if (!isValidObjectId(CID) && !isValidObjectId(PID)) throw new Error('Some ID is not an valid ObjectID')
 
             const { products } = await cartService.get(CID)
 
@@ -81,7 +85,7 @@ class CartController {
 
 
             if (productInside === -1) {
-                return res.status(400).sendUserError('Product not found')
+                throw new Error('Product not found')
             }
 
             const updateQuantity = await cartService.update(CID, PID, quantity)
@@ -97,11 +101,11 @@ class CartController {
     delete = async (req, res) => {
         try {
             const { CID } = req.params
-            if (!isValidObjectId(CID)) return res.status(400).sendServerError('Cart ID isn\'t a valid Object ID')
+            if (!isValidObjectId(CID)) throw new Error('Cart ID isn\'t a valid Object ID')
 
             const cartExists = await cartService.get(CID)
 
-            if (!cartExists) return res.status(400).sendServerError('Cart doesn\'t exists')
+            if (!cartExists) throw new Error('Cart doesn\'t exists')
 
             const clearCart = await cartService.clear(CID)
 
@@ -138,8 +142,8 @@ class CartController {
 
             const { products } = await cartService.get(CID) ?? {}
 
-            if (!products) return res.status(404).sendUserError("Cart not found")
-            if (products.length === 0) return res.status(400).sendUserError('Cart is empty')
+            if (!products) throw new Error("Cart not found")
+            if (products.length === 0) throw new Error('Cart is empty')
 
             //Array con los productos que no son comprables
             const unbuyableProducts = products.filter(product => product.product.stock < product.qty).map(item => item.product._id.toString())
@@ -155,7 +159,7 @@ class CartController {
 
                 })
                 const generateTicket = await ticketService.newTicket(randomUUID(), totalCompra, req.user.email)
-                return res.status(400).sendSuccess(generateTicket)
+                return res.status(200).sendSuccess(generateTicket)
             }
 
             //Se guardan los productos que si están disponibles
@@ -167,7 +171,7 @@ class CartController {
             })
 
             //No se pudo comprar ningun producto
-            if (buyableProducts.length === 0) return res.status(400).sendUserError({ message: "Can't complete the purchase process", products: unbuyableProducts })
+            if (buyableProducts.length === 0) throw new Error({ message: "Can't complete the purchase process", products: unbuyableProducts })
 
             //Se pueden comprar algunos productos
             for (const item of buyableProducts) {

@@ -23,7 +23,7 @@ class ProductController {
             const SEARCH_KEYS = ["sort", "limit", "page", "category", "status"]
             const successKeys = queryKeys.some(keys => SEARCH_KEYS.includes(keys))
 
-            if (!successKeys) return res.status(400).sendServerError('Some keys missmatch with accepted search keys')
+            if (!successKeys) throw new Error('Some keys missmatch with accepted search keys')
 
             const searchQuery = querySearch(req.query, "products")
 
@@ -33,19 +33,21 @@ class ProductController {
             const pageBuild = pageBuilder(req, pagination)
             res.status(200).sendSuccess({ products, pageBuild })
         } catch (error) {
-            res.status(500).sendServerError(error.message)
+            logger.error(error)
+            res.status(400).sendServerError(error.message)
         }
     }
 
     getById = async (req, res) => {
         try {
             const { pid } = req.params
-            if (!isValidObjectId(pid)) return res.status(400).sendServerError('Invalid product ID')
+            if (!isValidObjectId(pid)) throw new Error('Invalid product ID')
 
             const product = await productService.getById(pid)
             res.status(200).sendSuccess(product)
         } catch (error) {
-            res.status(500).sendServerError(error.message)
+            logger.error(error)
+            res.status(400).sendServerError(error.message)
         }
     }
 
@@ -97,7 +99,8 @@ class ProductController {
         try {
             const { params: { pid }, user: { userID, role } } = req
 
-            if (!isValidObjectId(pid)) return res.status(404).sendServerError("Param isn't an valid ID")
+            if (!isValidObjectId(pid)) throw new Error("Param isn't an valid ID")
+            if (Object.keys(req.body).length < 1) throw new Error("There's empty values to update")
 
             const product = await productService.getById(pid)
             if (!product) {
@@ -111,7 +114,7 @@ class ProductController {
 
             if (role.toLowerCase() !== 'admin') {
                 if (product.owner.toString() !== userID) {
-                    return res.status(401).sendUserError("Can't modify this product")
+                    throw new Error("Can't modify this product")
                 }
                 const updateProduct = await productService.update(pid, req.body)
                 return res.status(200).sendSuccess({
@@ -119,8 +122,6 @@ class ProductController {
                     message: 'Product has been updated'
                 })
             }
-
-            if (Object.keys(req.body).length < 1) return res.status(400).sendServerError("There's empty values to update")
 
             const updateProduct = await productService.update(pid, req.body)
 
@@ -136,14 +137,14 @@ class ProductController {
     delete = async (req, res) => {
         try {
             const { params: { pid }, user: { userID, role } } = req
-            if (!isValidObjectId(pid)) return res.status(400).sendServerError("Product ID isn't a correct value")
+            if (!isValidObjectId(pid)) throw new Error("Product ID isn't a correct value")
 
             const findProduct = await productService.getById(pid)
-            if (!findProduct) return res.status(400).sendUserError('Product missmatch')
+            if (!findProduct) throw new Error('Product missmatch')
 
             if (role.toLowerCase() !== 'admin') {
                 if (findProduct.owner.toString() !== userID) {
-                    return res.status(401).sendUserError("No permissions")
+                    throw new Error("No permissions")
                 }
                 const deleteProduct = await productService.delete(pid)
                 return res.status(200).sendSuccess({
@@ -158,6 +159,7 @@ class ProductController {
                 message: 'Product deleted successfully'
             })
         } catch (error) {
+            logger.error(error)
             res.status(500).sendServerError(error.message)
         }
     }
