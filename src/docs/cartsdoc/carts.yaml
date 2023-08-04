@@ -1,0 +1,405 @@
+paths:
+  /api/carts/:
+    post:
+      summary: Create a new cart
+      description: Create a new cart
+      tags:
+      - Carts
+      responses:
+        "200":
+          description: An object response that contains the info of the new cart and a message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: New cart generated
+                      cartID:
+                        type: string
+                        format: ObjectId
+                        example: 6493e2842dcfc98582c09b36
+        "500":
+          description: if something gone wrong, show a object message with the error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  payload:
+                    type: string
+                    example: error message
+
+  /api/carts/{CID}:
+    get:
+      summary: get a cart by its ID
+      description: get a cart by its Mongo ID
+      tags:
+      - Carts
+      parameters:
+      - $ref: "#components/parameters/cartID"
+      responses:
+        "200":
+          description: shows an objec message showing the complete cart info and products inside
+          content:
+            application/json:
+              schema:
+              examples:
+                cartWithProducts:
+                  value:
+                    status: success
+                    payload:
+                    - product:
+                        _id: 6497c5102d45663802b277b3
+                        title: T-Shirt White
+                        description: A white t-shirt
+                        owner: 6497c5102d45663802b277b3
+                        price: 20
+                        thumbnail:
+                        - path/to/thumbnail.png
+                        - path/to/second/thumbnail.jpg
+                        code: WHITE-T-SHIRT-0099
+                        stock: 15
+                        category: T-Shirts
+                      qty: 10
+                cartWithoutProducts:
+                  value:
+                    status: success
+                    payload: []
+        "400":
+          description: If the request has any bad request
+          content:
+            application/json:
+              schema:
+              examples:
+                invalidCartID:
+                  value:
+                    status: error
+                    payload: Cart isn't a valid ObjectId
+
+    put:
+      summary: Add products to a cart
+      description: Add an array of products to a cart if the cart user isn't the owner of the product
+      tags:
+      - Carts
+      parameters:
+      - $ref: "#components/parameters/cartID"
+      requestBody:
+        $ref: "#components/requestBodies/addProducts"
+      responses:
+        "200":
+          description: If the product/s where added, it shows an object with a message and the products inside
+          content:
+            application/json:
+              schema:
+              examples:
+                user tries to add an own product:
+                  value:
+                    status: success
+                    payload:
+                      message: Found some items that owns with this user, just added products that isn't from the user
+                      products:
+                      - product: 6493e2842dcfc98582c09b36
+                        qty: 2
+                all products added:
+                  value:
+                    status: success
+                    payload:
+                      message: Products were added successfully
+                      products:
+                      - product: 6493e2842dcfc98582c09b36
+                        qty: 1
+                      - product: 649502071e9c54ab81bd66df
+                        qty: 3
+        "400":
+          description: Shows an object with a message if something went wrong
+          content:
+            application/json:
+              schema:
+              example:
+                status: error
+                payload: Empty Cart
+
+    delete:
+      summary: Delete all products inside the cart
+      description: This is used when you want to delete all products inside the cart with the ID of the cart
+      tags:
+      - Carts
+      parameters:
+      - $ref: "#components/parameters/cartID"
+      responses:
+        "200":
+          description: If the cart was found and everything went ok, it shows a message with the cart items inside
+          content:
+            application/json:
+              schema:
+              example:
+                status: success
+                payload:
+                  _id: 64aef4654feaf7a4d6a9bc62
+                  products: []
+                  __v: 0
+        "400":
+          description: If something went wrong or the cart is not found, it drops an error object with message describing the error
+          content:
+            application/json:
+              schema:
+              example:
+                status: error
+                payload: Cart doesn't exists
+
+  /api/carts/{CID}/product/{PID}:
+    put:
+      summary: update a product
+      description: You can update product's quantity
+      tags:
+      - Carts
+      parameters:
+      - $ref: "#components/parameters/cartID"
+      - $ref: "#components/parameters/productID"
+      requestBody:
+        description: Needed body to update quantity
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: number
+                  description: the total quantity to SUM current quantity
+                  example: 4
+      responses:
+        "200":
+          description: shows an object with a message and a payload
+          content:
+            application/json:
+              schema:
+              example:
+                status: success
+                payload:
+                  _id: 64bafabee471fff7862a1d9d
+                  products:
+                  - product: 6497c5102d45663802b277b3
+                    qty: 11
+        "400":
+          description: shows a response object with a message
+          content:
+            application/json:
+              schema:
+              example:
+                status: error
+                payload: Quantity not specified
+
+    delete:
+      summary: Delete a product into a cart
+      description: Can delete a entire product with its PID and the Cart ID
+      tags:
+      - Carts
+      parameters:
+      - $ref: "#components/parameters/cartID"
+      - $ref: "#components/parameters/productID"
+      responses:
+        "200":
+          description: Shows an object with the cart and its products
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  payload:
+                    $ref: "#components/schemas/Cart"
+              examples:
+                without products:
+                  value:
+                    status: success
+                    payload:
+                      _id: 64bafabee471fff7862a1d9d
+                      products: []
+                with products:
+                  value:
+                    status: success
+                    payload:
+                      _id: 64bafabee471fff7862a1d9d
+                      products:
+                      - product: 649502071e9c54ab81bd66df
+                        qty: 15
+        "400":
+          description: shows an object with a message error
+          content:
+            application/json:
+              schema:
+              example:
+                status: error
+                payload: cartID or productID aren't a valid ObjectID
+
+  /api/carts/{CID}/purchase:
+    post:
+      summary: Purchase a cart
+      description: Purchase all the content in the cart if its available
+      tags:
+      - Carts
+      parameters:
+      - $ref: "#components/parameters/cartID"
+      responses:
+        "200":
+          description: A response indicating if the cart was bought
+          content:
+            application/json:
+              schema:
+              examples:
+                All products were bought:
+                  value:
+                    status: success
+                    payload:
+                      code: 145fc35f-6dff-4ce4-a90b-2eacb403c3bf
+                      amount: 15000
+                      purchaser: example@domain.com
+                      _id: 64a090d9888c619eed950a57
+                      purchase_time: 2023-07-01T20:47:21.646+00:00
+                Some products were bought:
+                  value:
+                    status: success
+                    payload:
+                      message: 'Purchase done'
+                      ticket:
+                        code: 145fc35f-6dff-4ce4-a90b-2eacb403c3bf
+                        amount: 15000
+                        purchaser: example@domain.com
+                        _id: 64a090d9888c619eed950a57
+                        purchase_time: 2023-07-01T20:47:21.646+00:00
+                      notAvailableProducts:
+                      - product: 64a1cf34395e75f8aff1bff0
+                        qty: 5
+                      - product: 64c4b7058d8bb98108811471
+                        qty: 1
+        "400":
+          description: Object message when the products weren't available
+          content:
+            application/json:
+              schema:
+              example:
+                status: error
+                payload:
+                  message: Can't complete the purchase process
+                  products:
+                  - product: 64c4b7058d8bb98108811471
+                    qty: 1
+                  - product: 64a0add9ea89846c0e0ac1d9
+                    qty: 5
+
+
+
+components:
+  parameters:
+    cartID:
+      in: path
+      description: Is the cart identificator as an Mongo Object ID
+      name: CID
+      required: true
+      schema:
+        type: string
+        format: ObjectId
+      example: 6493e2842dcfc98582c09b36
+
+    productID:
+      in: path
+      description: Is the product identifier as an Mongo Object ID
+      name: PID
+      required: true
+      schema:
+        type: string
+        format: ObjectId
+      example: 64aef4654feaf7a4d6a9bc62
+
+  schemas:
+    Cart:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: ObjectId
+          description: Is the ID autogenerated by mongo
+        products:
+          type: array
+          description: is an array of items that contains all the identifiers of the products inside the cart and its quantity
+          items:
+            type: object
+            properties:
+              product:
+                type: string
+                description: Is the product identifier code by Mongo
+                format: ObjectId
+              qty:
+                description: Products total inside the cart
+                type: number
+        __v:
+          type: number
+          description: version of the product, if it have some update, the number increase
+      example:
+        $ref: "#components/examples/cartExample"
+
+    Ticket:
+      type: object
+      properties:
+        code:
+          type: string
+          format: UUID
+          description: Is purchase code
+        amount:
+          type: number
+          description: Total that customer paid
+        purchaser:
+          description: user that bought the products
+          type: string
+          format: email
+        _id:
+          type: string
+          format: ObjectId
+          description: Ticket identifier
+        purchase_time:
+          type: string
+          format: date
+          description: date when the purchase was done
+
+  examples:
+    cartExample:
+      _id: 6497c5102d45663802b277b3
+      products:
+      - {product: 64933c6ece0a2e17ff369b07, qty: 5}
+      - {product: 649cfd9202b6b70bf3c05f8a, qty: 15}
+      __v: 0
+
+  requestBodies:
+    addProducts:
+      description: You can add many items as you want, if you keep this format
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                product:
+                  type: string
+                  format: ObjectId
+                quantity:
+                  type: number
+          examples:
+            add one product:
+              value: [{product: 649502071e9c54ab81bd66df, quantity: 1}]
+            add more products:
+              value: [{product: 649502071e9c54ab81bd66df, quantity: 1}, {product: 6493e2842dcfc98582c09b36, quantity: 2}]

@@ -1,0 +1,384 @@
+paths:
+  /api/products/:
+    get:
+      summary: Get all the products
+      description: get all the products from the database and give a pagination
+      tags:
+      - Products
+      parameters:
+      - $ref: "#components/parameters/sortParam"
+      - $ref: "#components/parameters/limitParam"
+      - $ref: "#components/parameters/pageParam"
+      - $ref: "#components/parameters/categoryParam"
+      - $ref: "#components/parameters/statusParam"
+      responses:
+        "200":
+          description: An array of products, showing its information
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Product"
+        "400":
+          description: Response if the query param is not a valid param
+          content:
+            application/json:
+              example:
+                status: error
+                payload: Some keys missmatch with accepted search keys
+
+    post:
+      summary: Create new product
+      description: Create a new product on the database
+      tags:
+      - Products
+      requestBody:
+        description: The body needed to create a new object
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#components/requestBodies/newProduct"
+            examples:
+              request body example:
+                $ref: "#/components/examples/newProductExample"
+      responses:
+        "200":
+          description: Response object that shows product info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: product created
+                      addProduct:
+                        $ref: "#components/schemas/Product"
+                        example:
+                          $ref: "#components/examples/productExample"
+        "400":
+          description: error object showing message why the product can't be created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  payload:
+                    type: string
+                    example: Product needs a title to be created
+
+  /api/products/{PID}:
+    get:
+      summary: Get a product
+      description: Get a product by its ID
+      parameters:
+      - $ref: "#components/parameters/productParam"
+      tags:
+      - Products
+      responses:
+        "200":
+          description: Shows an object with all the product information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: An message of the request value
+                    example: success
+                  payload:
+                    $ref: "#components/schemas/Product"
+        "400":
+          description: Shows an object message with the error message
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    description: shows a message of the request value
+                    type: string
+                  payload:
+                    type: string
+                    description: show the error message
+                example:
+                  status: error
+                  payload: Invalid product ID
+
+    put:
+      summary: Update product
+      description: Update a product if the user logged is an admin or product owner
+      parameters:
+      - $ref: "#components/parameters/productParam"
+      tags:
+      - Products
+      requestBody:
+        description: The only values on the body that can update
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#components/requestBodies/updateProduct"
+            examples:
+              new values product:
+                $ref: "#components/examples/newProductExample"
+      responses:
+        "200":
+          description: Object response if the user can update the product and the product has been updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: object
+                    properties:
+                      updateProduct:
+                        $ref: "#components/schemas/Product"
+                        example:
+                          $ref: "#components/examples/newProductExample"
+                      message:
+                        type: string
+                        example: Product has been updated
+        "400":
+          description: response if something went wrong, or if the user ID is not the same of the product owner
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  payload:
+                    type: string
+              examples:
+                invalidPid:
+                  value:
+                    status: error
+                    payload: Param is not a valid ID
+                emptyBody:
+                  value:
+                    status: error
+                    payload: There's empty values to update
+                productDoesn't exists:
+                  value:
+                    status: error
+                    payload: Cant modify the product
+                not the owner:
+                  value:
+                    status: error
+                    payload: Cant modify the product
+
+    delete:
+      summary: Delete a product
+      description: if you are the owner or an admin, you will can delete a product by its ID
+      tags:
+      - Products
+      parameters:
+      - $ref: "#components/parameters/productParam"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: object
+                    properties:
+                      deleteProduct:
+                        type: object
+                        example:
+                          $ref: "#components/examples/productExample"
+                      message:
+                        type: string
+                        example: Product deleted successfully
+        "400":
+          description: Error object if something went wrong and a message describing the error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  payload:
+                    type: string
+                    example: Product ID is not a valid ID
+
+components:
+  requestBodies:
+
+    newProduct:
+      schema:
+        type: object
+        properties:
+          title:
+            type: string
+            description: Is the name of the product
+          description:
+            type: string
+            description: Product description
+          price:
+            type: number
+            description: Is the price of the product
+          thumbnail:
+            type: string
+            format: binary
+          code:
+            type: string
+            description: Is a code to identify the product out of the database
+          stock:
+            type: number
+            description: how many items are available
+          category:
+            type: string
+            description: Product's category
+      example:
+        $ref: "#components/examples/newProductExample"
+
+    updateProduct:
+      description: change the values of the product
+      schema:
+        type: object
+        properties:
+          title:
+            type: string
+          description:
+            type: string
+          price:
+            type: number
+          thumbnail:
+            type: string
+            format: binary
+          code:
+            type: string
+          stock:
+            type: number
+          category:
+            type: string
+      example:
+        $ref: "#components/example/newProductExample"
+
+  examples:
+    productExample:
+      _id: 6497c5102d45663802b277b3
+      title: Product title
+      description: Product description
+      owner: example@domain.com
+      price: 1500
+      thumbnail: [/path/to/image, /path/to/second/image]
+      code: PRODUCT-EXAMPLE-009
+      stock: 10
+      status: true
+      category: example
+      __v: 0
+
+    newProductExample:
+      value:
+        title: new Product
+        description: Product's description
+        price: 9999
+        thumbnail: product-img.png
+        code: PRODUCT-NEW-0099
+        stock: 99
+        category: examples
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          format: ObjectId
+        title:
+          type: string
+        description:
+          type: string
+        owner:
+          type: string
+          format: email
+        price:
+          type: number
+          format: double
+        thumbnail:
+          type: array
+          items:
+            type: string
+            format: path
+        code:
+          type: string
+        stock:
+          type: number
+        status:
+          type: boolean
+        category:
+          type: string
+      example:
+        $ref: "#components/examples/productExample"
+
+  parameters:
+    sortParam:
+      in: query
+      name: sort
+      required: false
+      schema:
+        oneOf:
+        - type: string
+        - type: number
+        enum: [asc, desc, 1, -1]
+      description: Is how you want sorted values by its price
+    limitParam:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: number
+        minimum: 1
+      description: the total of document that shows the request
+    pageParam:
+      in: query
+      name: page
+      required: false
+      schema:
+        type: number
+        minimum: 1
+      description: The actual page you see the documents
+    categoryParam:
+      in: query
+      name: category
+      required: false
+      schema:
+        type: string
+      description: Apply an item filter per item category
+    statusParam:
+      in: query
+      name: status
+      required: false
+      schema:
+        type: string
+        enum: [true, false]
+      description: filter items per disponibility
+    productParam:
+      in: path
+      name: PID
+      required: true
+      schema:
+        type: string
+        format: ObjectId
+      description: Is the mongo object ID of the product
