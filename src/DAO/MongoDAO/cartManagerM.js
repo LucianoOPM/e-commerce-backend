@@ -43,7 +43,7 @@ class CartManagerM {
      */
     updateProduct = async (cartID, productID, pQuantity) => {
         try {
-            return await cartModel.updateOne({ _id: cartID, 'products.product': productID }, { $inc: { "products.$.qty": pQuantity } }, { returnDocument: "after" })
+            return await cartModel.findOneAndUpdate({ _id: cartID, 'products.product': productID }, { $inc: { "products.$.qty": pQuantity } }, { returnDocument: "after" })
         } catch (error) {
             throw error
         }
@@ -77,7 +77,7 @@ class CartManagerM {
         try {
             //Actualizar el carrito con el operador $pull el cual remueve de un array las instancias encontradas según la condicion especificada
             //https://www.mongodb.com/docs/v5.2/reference/operator/update/pull/
-            return await cartModel.updateOne({ _id: cid }, { $pull: { products: {} } })
+            return await cartModel.findOneAndUpdate({ _id: cid }, { $pull: { products: {} } }, { returnDocument: "after" })
         } catch (error) {
             throw error.message
         }
@@ -91,7 +91,7 @@ class CartManagerM {
      */
     delProduct = async (CID, PID) => {
         try {
-            return await cartModel.updateOne({ _id: CID }, { $pull: { products: { product: PID } } })
+            return await cartModel.findOneAndUpdate({ _id: CID }, { $pull: { products: { product: PID } } }, { returnDocument: "after" })
         } catch (error) {
             throw error.message
         }
