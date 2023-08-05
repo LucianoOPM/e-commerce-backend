@@ -63,16 +63,16 @@ class UserController {
             const { first_name, last_name, email, password, birthdate } = req.body
 
             //Si faltan algunos de estos valores, retorna un error
-            if (!first_name || !last_name || !email || !password || !birthdate) return res.status(401).sendServerError('Empty Values')
+            if (!first_name || !last_name || !email || !password || !birthdate) throw new Error('Empty Values')
 
             const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            if (!emailRegExp.test(email)) return res.status(500).sendServerError('email is not a valid value')
+            if (!emailRegExp.test(email)) throw new Error('email is not a valid value')
             //Si no faltan valores, efectua una busqueda por email para validar que el usuario no este registrado en la base de datos.
             const userExists = await userService.findUser(email)
 
             //Si está, ejecuta un error
-            if (userExists) return res.status(401).sendServerError('User Already Exists')
+            if (userExists) throw new Error('User Already Exists')
 
             //Si no está, genera un carrito nuevo y se le asigna al usuario.
             const { _id } = await cartService.newCart()
@@ -101,7 +101,7 @@ class UserController {
     put = async (req, res, next) => {
         try {
             //Valores que se permitirán cambiar al usuario
-            const acceptedBody = ["first_name", "last_name", "email", "role", "birthdate", "password"]
+            const acceptedBody = ["first_name", "last_name", "birthdate"]
 
             //Extrae el UID y el body del req
             const { params: { UID }, body } = req
@@ -111,9 +111,9 @@ class UserController {
             const validBody = bodyKeys.some(keys => !acceptedBody.includes(keys))
 
             //validaciones
-            if (!isValidObjectId(UID)) return res.status(400).sendServerError("UID isn't a valid ObjectID")//Valida que el UID sea un objectID valido
-            if (bodyKeys.length === 0) return res.status(400).sendServerError('Empty request body keys')//Valida que no tenga un json vacio para las modificaciones
-            if (validBody) return res.status(400).sendServerError("Some keys doesn't match with allowed key user values")//Valida que las modificaciones implementadas sean validas.
+            if (!isValidObjectId(UID)) throw new Error("UID isn't a valid ObjectID")//Valida que el UID sea un objectID valido
+            if (bodyKeys.length === 0) throw new Error('Empty request body keys')//Valida que no tenga un json vacio para las modificaciones
+            if (validBody) throw new Error("Some keys doesn't match with allowed key user values")//Valida que las modificaciones implementadas sean validas.
 
             //Efectua los cambio y se extraen las propiedades que se utilizarán para generar el token (No extraer la constraseña o información sensible)
             const { cartID, role, email, userID } = await userService.updateUser(UID, body)
@@ -126,7 +126,7 @@ class UserController {
             res.status(200).cookie('coderCookieToken', token, {
                 httpOnly: true,
                 maxAge: 60 * 60 * 100
-            }).sendSuccess('User updated')
+            }).sendSuccess({ message: "User updated", token })
         } catch (error) {
             next(error)
         }
@@ -179,7 +179,7 @@ class UserController {
             const user = await userService.findUser(email)
             const userID = user?.nonSensitiveUser.userID
 
-            if (!userID) return res.status(404).sendUserError("Error.")
+            if (!userID) throw new Error("Can't find the user")
 
             const token = signUrlToken({ userID })
 
