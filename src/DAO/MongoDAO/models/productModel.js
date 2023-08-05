@@ -13,7 +13,7 @@ const productSchema = new Schema({
         required: true
     },
     owner: {
-        type: Schema.Types.ObjectId,
+        type: Schema.Types.String,
         ref: 'usuarios',
         default: 'ADMIN'
     },
