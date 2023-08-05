@@ -1,0 +1,517 @@
+paths:
+  /api/users/:
+    get:
+      summary: Get users
+      description: Get a list of users and his information
+      tags:
+      - Users
+      responses:
+        "200":
+          description: Shows an response object showing all the users in the database. In the example shows the password but the response don't show the user password.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Is the response
+                    example: success
+                  payload:
+                    type: object
+                    properties:
+                      normalizedUser:
+                        type: array
+                        items:
+                          $ref: "#components/schemas/User"
+                        example:
+                          $ref: "#components/examples/userExample"
+
+    post:
+      summary: Post a new user
+      description: Post a new user with all the information needed on the request Body
+      tags:
+      - Users
+      requestBody:
+        $ref: "#components/requestBodies/newUser"
+      responses:
+        "200":
+          description: response if a user is registred successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Is a message describing the status of the request
+                  payload:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: Is a message from the server
+                      token:
+                        type: string
+                        description: Is a token to allow the user use the web
+              example:
+                status: success
+                payload:
+                  message: user registered
+                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRvbnkgU3RhcmsiLCJpYXQiOjE1MTYyMzkwMjJ9.WOj3qrgQkaHnZGOA8aVlsJ5f4iBk1Uac7ytewZBKpaM
+        "400":
+          description: shows an object error message describing the error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Is the status of the request
+                  payload:
+                    name:
+                      type: string
+                      description: The error's name
+                    message:
+                      type: string
+                      description: Error's cause
+              example:
+                status: error
+                payload:
+                  name: error
+                  message: User exists
+
+  /api/users/{UID}:
+    get:
+      summary: Get a user by ID
+      description: This endpoint uses the request-parameter UID to get a specific User
+      tags:
+      - Users
+      parameters:
+      - $ref: "#components/parameters/UserID"
+      responses:
+        "200":
+          description: Sends an object response with the user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: is the status of the request
+                    example: success
+                  payload:
+                    $ref: "#components/schemas/User"
+                    example:
+                      $ref: "#components/examples/userExample"
+        "400":
+          description: Object response of a bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Request status
+                  error:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: Error's name
+                      message:
+                        type: string
+                        description: Error description
+              example:
+                status: error
+                error:
+                  name: Error
+                  message: UID is not a valid Object ID
+
+    put:
+      summary: Update a user
+      description: Use the param UID to update a user
+      tags:
+      - Users
+      parameters:
+      - $ref: "#components/parameters/UserID"
+      requestBody:
+        $ref: "#components/requestBodies/updateUser"
+      responses:
+        "200":
+          description: Response if everything went fine
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Request status
+                  payload:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        description: message from server
+                      token:
+                        type: string
+                        description: User new token with its information
+              example:
+                status: success
+                payload:
+                  message: user updated
+                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRvbnkgU3RhcmsiLCJpYXQiOjE1MTYyMzkwMjJ9.WOj3qrgQkaHnZGOA8aVlsJ5f4iBk1Uac7ytewZBKpaM
+        "400":
+          description: Is the response for a bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    description: Request status
+                    type: string
+                  error:
+                    description: Error properties
+                    type: object
+                    properties:
+                      name:
+                        description: error name
+                        type: string
+                      message:
+                        description: error cause
+                        type: string
+              example:
+                status: error
+                error:
+                  name: Error
+                  message: Some keys missmatch with allowed keys
+
+    delete:
+      summary: Delete a user
+      description: With params you can delete a user from database ans its cart
+      tags:
+      - Users
+      parameters:
+      - $ref: "#components/parameters/UserID"
+      security:
+      - cookieAuth: []
+      responses:
+        "200":
+          description: shows an object response if the user was successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  payload:
+                    type: string
+                    example: User deleted successfully
+        "400":
+          description: Object response if something went wrong
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: The request status message
+                  error:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: Is the name of the error
+                      message:
+                        type: string
+                        description: Is the description of the error
+              example:
+                status: error
+                error:
+                  name: TypeError
+                  message: Cannot read properties of null
+        "403":
+          $ref: "#components/responses/unauthorized"
+
+  /api/users/restore:
+    post:
+      summary: Restore password email
+      description: With your email in the body, can send an email to restore your password
+      tags:
+      - Users
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  required: true
+                  description: Email to send new password field
+      responses:
+        "200":
+          description: Object response if the mail was send successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: response status
+                    example: success
+                  payload:
+                    type: string
+                    description: server message
+                    example: E-Mail was sended successfully
+        "400":
+          description: Response for a bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: response status
+                    example: error
+                  error:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: error's name
+                        example: error
+                      message:
+                        type: string
+                        description: error description
+                        example: Can't find user
+
+  /api/users/restore/{UID}:
+    put:
+      summary: Create new password
+      description: Once you get the email, it will contain an URL where you can change the password like this schema.
+      tags:
+      - Users
+      parameters:
+      - $ref: "#components/parameters/UserID"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: The new password that would be diferent from the last password
+      responses:
+        "200":
+
+          description: Response if the password was changed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: request status
+                    example: success
+                  payload:
+                    type: string
+                    description: message from the server
+                    example: Password updated
+        "400":
+          description: Bad request response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: error status
+                    example: error
+                  error:
+                    type: string
+                    description: Error description
+                    example: bad password
+
+  /api/users/premium/{UID}:
+    put:
+      summary: Update user's rol
+      description: Can set a user as a premium or as a user depends on its role
+      tags:
+      - Users
+      parameters:
+      - $ref: "#components/parameters/UserID"
+      responses:
+        "200":
+          description: Response if the role was updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    description: Request status
+                    example: success
+                  payload:
+                    $ref: "#components/schemas/User"
+                    example:
+                      $ref: "#components/examples/userExample"
+        "400":
+          description: Response from a bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  error:
+                    type: string
+                    example: User doesn't exists
+components:
+  parameters:
+    UserID:
+      in: path
+      name: UID
+      description: Is the user unique Identificator
+      schema:
+        type: string
+        format: ObjectId
+      example: 649335efa4bd2545cd6d0306
+
+  schemas:
+    User:
+      type: object
+      description: Is the user body and its information
+      properties:
+        _id:
+          type: string
+          format: ObjectId
+          description: Is the User ID autogenerated by MongoDB
+        first_name:
+          type: string
+          description: Is the user first name
+        last_name:
+          type: string
+          description: Is the user last name
+        cartID:
+          type: string
+          format: ObjectId
+          description: Is the cart reference who owns this user
+        role:
+          type: string
+          description: Are the available roles for the users
+          enum:
+          - ADMIN
+          - premium
+          - user
+        birthdate:
+          type: string
+          format: date
+          descrption: Is the actual birthdate of the user, based on this is generated the user age
+        password:
+          type: string
+          description: Is a hashed password
+
+  examples:
+    userExample:
+      _id: 6493e2842dcfc98582c09b38
+      first_name: Tony
+      last_name: Stark
+      email: starkIndustries@stark.com
+      cartID: 6493e2842dcfc98582c09b36
+      role: ADMIN
+      birthdate: 1970/05/29
+      password: $2y$10$SkqVn8ALpp3ExF9NMqiZtOBztDh0itZF2.0j5P7PSPiG8b39jERFy
+
+  requestBodies:
+    newUser:
+      description: Body needed to create a new user on the data base
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              first_name:
+                type: string
+              last_name:
+                type: string
+              email:
+                type: string
+                format: email
+              password:
+                type: string
+              birthdate:
+                type: string
+                format: date
+            required:
+            - first_name
+            - last_name
+            - email
+            - password
+            - birthdate
+          example:
+            first_name: Tony
+            last_name: Stark
+            email: stark@industries.com
+            password: TonyStark33
+            birthdate: 1970/05/29
+
+    updateUser:
+      description: Body needed to update a user
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              first_name:
+                type: string
+              last_name:
+                type: string
+              birthdate:
+                type: string
+                format: date
+          example:
+            first_name: Iron
+            last_name: Man
+            birthdate: 1970/12/12
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: coderCookieToken
+
+  responses:
+    unauthorized:
+      description: response if the request is unauthorized for the user
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              payload:
+                type: string
+          example:
+            status: error
+            payload: Unauthorized
