@@ -10,3 +10,6 @@ config.yaml
 kubeusers.yaml
 Dockerfile
 .dockerignore
+test/mocha_test
+test/chai_test
+test/super_test
