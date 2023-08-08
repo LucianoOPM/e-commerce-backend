@@ -5,7 +5,10 @@
   "main": "APP.js",
   "scripts": {
     "start": "node src/main.js --mode production",
-    "dev": "nodemon src/main.js --mode development"
+    "dev": "nodemon src/main.js --mode development",
+    "test:carts": "mocha test/carts_test/carts.test.js",
+    "test:products": "mocha test/products_test/products_success.test.js",
+    "test:session": "mocha test/session_test/session.test.js"
   },
   "keywords": [],
   "author": "",
@@ -36,6 +39,9 @@
     "winston": "^3.10.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.0.2"
+    "@faker-js/faker": "^8.0.2",
+    "chai": "^4.3.7",
+    "mocha": "^10.2.0",
+    "supertest": "^6.3.3"
   }
 }
