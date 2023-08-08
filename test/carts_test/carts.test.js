@@ -8,7 +8,7 @@ describe('/api/carts Router test', () => {
     let cartID, cookie;
     beforeEach(async () => {
         const user = {
-            email: 'ana@gmail.com',
+            email: 'adminCoder@coder.com',
             password: 'facil123'
         }
         let { header } = await requester.post('/api/session/login').send(user)
