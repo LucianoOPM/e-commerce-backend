@@ -20,7 +20,7 @@ class ViewsController {
                 prevLink,
                 script: "viewProducts.js",
                 role: user?.role ?? 'Invitado',
-                addProducts: user?.role == 'ADMIN' ? true : false,
+                addProducts: user?.role == 'ADMIN' || user?.role == 'premium' ? true : false,
                 first_name: user?.first_name,
                 last_name: user?.last_name,
                 cartID: user?.cartID
