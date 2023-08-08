@@ -22,9 +22,9 @@ describe('/api/carts Router test', () => {
     })
     it('Router should allow add into a cart an array of products', async () => {
         const productsMock = [
-            { product: "64d131c9ffa80a9c5bddcb02", quantity: 1 },
-            { product: "64d13322ffa80a9c5bddcb07", quantity: 1 },
-            { product: "64d13412ffa80a9c5bddcb1b", quantity: 2 }
+            { product: "64d1c59bec4cdca3865c3ad5", quantity: 1 },
+            { product: "64d1c5caec4cdca3865c3ada", quantity: 1 },
+            { product: "64d1ca472a099bf1db85b307", quantity: 2 }
         ]
 
         let { _body } = await requester.put(`/api/carts/${cartID}`)
@@ -35,7 +35,7 @@ describe('/api/carts Router test', () => {
         expect(_body.payload.products).to.have.length(3)
     })
     it('Router should delete a product', async () => {
-        const productID = "64d13412ffa80a9c5bddcb1b"
+        const productID = "64d1ca472a099bf1db85b307"
 
         const { _body } = await requester.delete(`/api/carts/${cartID}/product/${productID}`)
             .set('Cookie', [`${cookie.name}=${cookie.value}`])
@@ -43,7 +43,7 @@ describe('/api/carts Router test', () => {
         expect(_body.payload._id).to.be.equal(cartID)
         expect(_body.payload.products).to.have.length(2)
     })
-    it("Router should be able to buy products inside, instead they aren't available", async () => {
+    it("Router should be able to buy products inside, instead they aren't available and generates a ticket on DB", async () => {
         const { _body } = await requester.post(`/api/carts/${cartID}/purchase`)
             .set('Cookie', [`${cookie.name}=${cookie.value}`])
         const { _body: bodyCart } = await requester.get(`/api/carts/${cartID}`)
