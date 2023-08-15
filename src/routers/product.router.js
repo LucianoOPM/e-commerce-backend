@@ -9,7 +9,7 @@ class ProductRouter extends RouterClass {
     init() {
         this.get('/', ['PUBLIC'], product.get)//Funciona
         this.get('/:pid', ['PUBLIC'], product.getById)//Funciona
-        this.post('/', ['ADMIN', 'PREMIUM'], uploader.single('thumbnail'), product.post)//Funciona ADMIN
+        this.post('/', ['ADMIN', 'PREMIUM'], uploader.single('product'), product.post)//Funciona ADMIN
         this.put('/:pid', ['ADMIN', 'PREMIUM'], product.update)//Funciona ADMIN
         this.delete('/:pid', ['ADMIN', 'PREMIUM'], product.delete)//Funciona ADMIN
     }
