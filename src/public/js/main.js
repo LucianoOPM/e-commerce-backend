@@ -11,7 +11,7 @@ addBtn.addEventListener('click', (e) => {
     formValues.append("title", form.title.value)
     formValues.append("description", form.description.value)
     formValues.append("price", form.price.value)
-    formValues.append("thumbnail", form.thumbnail.files[0])
+    formValues.append("product", form.product.files[0])
     formValues.append("code", form.code.value)
     formValues.append("stock", form.stock.value)
     formValues.append("status", form.status.checked ? true : false)
@@ -33,7 +33,6 @@ socket.on('server:renderProducts', async (data) => {
     const { products: serverProducts, pagination } = data
     let products = document.querySelector("#newProducts")
     const pages = document.querySelector('#pagination')
-    console.log(pagination)
     pages.innerHTML = `
         ${pagination.hasPrevPage ? "<button>Anterior</button>" : "<button disabled>Anterior</button>"}
         ${pagination.totalDocs}
@@ -41,7 +40,6 @@ socket.on('server:renderProducts', async (data) => {
     `
 
     let renderProducts = serverProducts.map(products => {
-        console.log(products)
         return `
         <h2>${products.title}</h2>
         <h3>${products.description}</h3>
