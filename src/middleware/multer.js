@@ -4,7 +4,8 @@ const parentFolder = path.join(__dirname, "..", "public/assets")
 
 const storage = multer.diskStorage({
     destination: function (_req, file, cb) {
-        if (file.fieldname == "document") {
+        const DOCUMENTS = ["identify", "address", "bank statement"]
+        if (DOCUMENTS.includes(file.fieldname)) {
             cb(null, `${parentFolder}/documents`)
         }
         if (file.fieldname == "profile") {
