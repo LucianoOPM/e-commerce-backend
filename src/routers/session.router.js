@@ -7,7 +7,7 @@ const session = new SessionController()
 class SessionRouter extends RouterClass {
     init() {
         this.post('/login', ['PUBLIC'], session.login)
-        this.post('/logout', ['PUBLIC'], session.logout)
+        this.post('/logout', ['USER', 'ADMIN', 'PREMIUM'], session.logout)
         this.get('/github', ['PUBLIC'], passportCall('github', { scope: ['user: email'] }))//Arreglar mañana
         this.get('/githubcallback', ['PUBLIC'], passportCall('github', {
             failureRedirect: '/login'
