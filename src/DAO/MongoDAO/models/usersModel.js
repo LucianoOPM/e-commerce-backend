@@ -21,6 +21,9 @@ const usersSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'carts'
     },
+    documents: [
+        { name: String, reference: String, _id: false }
+    ],
     role: {
         type: String,
         enum: ['user', 'ADMIN', 'premium'],
@@ -31,7 +34,12 @@ const usersSchema = new Schema({
     },
     password: {
         type: String
+    },
+    last_connection: {
+        type: Date
     }
+}, {
+    versionKey: false
 })
 
 usersSchema.plugin(paginate)
@@ -48,7 +56,9 @@ module.exports = {
         first_name: nombre,
         last_name: apellido,
         email: email,
-        cartID: asdasdsadasdasd213213,
+        cartID: asdasdsadasdasd213213,,
+        document: [{name, reference}],
+        last_connection: ""
         role: customer,
         birthDate: 08/05/1996,
         password:asdasda

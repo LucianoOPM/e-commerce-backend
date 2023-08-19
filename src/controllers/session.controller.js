@@ -33,6 +33,7 @@ class SessionController {
 
     logout = async (req, res) => {
         try {
+
             res
                 .clearCookie('coderCookieToken')
                 .redirect('/login')

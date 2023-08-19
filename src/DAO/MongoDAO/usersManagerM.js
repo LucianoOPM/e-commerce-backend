@@ -45,6 +45,14 @@ class UserManager {
         }
     }
 
+    updateDocuments = async (id, newDocs) => {
+        try {
+            return await userModel.findByIdAndUpdate(id, { $push: { documents: { $each: newDocs } } })
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
+
     deleteUser = async (uid) => {
         try {
             return await userModel.findOneAndDelete({ _id: uid })

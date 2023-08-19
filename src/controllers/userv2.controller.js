@@ -139,9 +139,15 @@ class UserController {
                 throw new Error('UID is not a valid object ID')
             }
             const { nonSensitiveUser } = await userService.findUser(UID) ?? {}
+
             if (!nonSensitiveUser) {
                 throw new Error("User doesn't exists")
             }
+
+            if (nonSensitiveUser.documents.length < 3 && nonSensitiveUser.role === "user") {
+                throw new Error('User must have all the documentation to be able to upgrade its account.')
+            }
+
             nonSensitiveUser.role == "user" ? nonSensitiveUser.role = "premium" : nonSensitiveUser.role === "premium" ? nonSensitiveUser.role = "user" : null
             const newRole = await userService.updateUser(UID, nonSensitiveUser)
 
@@ -218,6 +224,53 @@ class UserController {
             await userService.changePassword({ email, newPassword })
 
             res.status(200).sendSuccess('Se cambió la contraseña')
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    document = async (req, res, next) => {
+        try {
+            const { params: { UID } } = req
+            const { nonSensitiveUser } = await userService.findUser(UID) ?? {}
+            if (!nonSensitiveUser) throw new Error('User not found')
+
+            const identify = req.files?.identify
+            const address = req.files?.address
+            const bankStatement = req.files?.bankStatement
+
+            if (!identify && !address && !bankStatement) throw new Error('At least one document should be uploaded')
+
+            const documents = []
+            let response = "Next documents were uploaded successfully:"
+
+            if (identify) {
+                documents.push({ name: identify[0].filename, reference: identify[0].path })
+                if (documents.length > 1) {
+                    response = response.concat(", ", "Identify")
+                } else {
+                    response = response.concat(" ", "Identify")
+                }
+            }
+            if (address) {
+                documents.push({ name: address[0].filename, reference: address[0].path })
+                if (documents.length > 1) {
+                    response = response.concat(", ", "Address")
+                } else {
+                    response = response.concat(" ", "Address")
+                }
+            }
+            if (bankStatement) {
+                documents.push({ name: bankStatement[0].filename, reference: bankStatement[0].path })
+                if (documents.length > 1) {
+                    response = response.concat(", ", "Bank Statement")
+                } else {
+                    response = response.concat(" ", "Bank Statement")
+                }
+            }
+
+            await userService.updateDocuments(UID, documents)
+            res.status(202).sendSuccess(response)
         } catch (error) {
             next(error)
         }

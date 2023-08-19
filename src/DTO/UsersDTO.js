@@ -8,6 +8,7 @@ class UserDto {
         this.age = this.#ageCalculator(user.birthdate)
         this.password = user.password
         this.email = user.email
+        this.documents = user.documents
     }
 
     #ageCalculator = (birthdate) => {

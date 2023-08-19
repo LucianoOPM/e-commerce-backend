@@ -62,6 +62,14 @@ class UserRepository {
         }
     }
 
+    updateDocuments = async (uid, documents) => {
+        try {
+            return await this.dao.updateDocuments(uid, documents)
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
+
     deleteUser = async (uid) => {
         try {
             return this.dao.deleteUser(uid)

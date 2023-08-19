@@ -1,18 +1,27 @@
 const multer = require('multer')
 const path = require("node:path")
-const parentFolder = path.join(__dirname, "..", "public/assets")
+const createFolder = require('../utils/createUserFolder')
+
 
 const storage = multer.diskStorage({
-    destination: function (_req, file, cb) {
-        const DOCUMENTS = ["identify", "address", "bank statement"]
+    destination: async function (req, file, cb) {
+        const DOCUMENTS = ["identify", "address", "bankStatement"]
+        const { userID } = req.user
+
+
         if (DOCUMENTS.includes(file.fieldname)) {
-            cb(null, `${parentFolder}/documents`)
+            const parentFolder = path.join(__dirname, "..", "documents")
+            const refPath = `${parentFolder}/${userID}`
+            await createFolder(refPath)
+            cb(null, refPath)
         }
         if (file.fieldname == "profile") {
-            cb(null, `${parentFolder}/profiles`)
+            const parentFolder = path.join(__dirname, "..", "public/assets")
+            cb(null, `${parentFolder}/profiles/${userID}`)
         }
         if (file.fieldname == "product") {
-            cb(null, `${parentFolder}/products`)
+            const parentFolder = path.join(__dirname, "..", "public/assets")
+            cb(null, `${parentFolder}/products/${userID}`)
         }
     },
     filename: function (_req, file, cb) {
