@@ -33,7 +33,11 @@ class SessionController {
 
     logout = async (req, res) => {
         try {
-
+            const { userID } = req.user
+            const last_connection = {
+                last_connection: new Date().toLocaleString('es-MX')
+            }
+            const user = await userService.updateUser(userID, last_connection)
             res
                 .clearCookie('coderCookieToken')
                 .redirect('/login')
