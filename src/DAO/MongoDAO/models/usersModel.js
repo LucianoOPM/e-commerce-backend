@@ -36,7 +36,7 @@ const usersSchema = new Schema({
         type: String
     },
     last_connection: {
-        type: Date
+        type: String
     }
 }, {
     versionKey: false
