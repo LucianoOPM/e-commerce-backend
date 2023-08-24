@@ -9,23 +9,19 @@ class SessionController {
 
             if (bodyKeys.length === 0) return res.status(400).sendServerError('Empty values')
 
-            const user = await userService.findUser(req.body.email)
-            if (!user) return res.status(400).sendServerError('User or password are wrong')
-
-            const { password, nonSensitiveUser } = user
-
+            const { password, ...nonSensitiveUser } = await userService.findUser(req.body.email)
             const rightPass = await isValidPass(req.body.password, password)
 
             if (!rightPass) return res.status(400).sendServerError('User or password are wrong')
 
-            const token = generateToken({ user: { first_name: nonSensitiveUser.first_name, last_name: nonSensitiveUser.last_name, userID: nonSensitiveUser.userID, role: nonSensitiveUser.role, cartID: nonSensitiveUser.cartID, email: nonSensitiveUser.email } })
+            const token = generateToken(nonSensitiveUser)
 
             res.status(200)
                 .cookie('coderCookieToken', token, {
                     httpOnly: true,
                     maxAge: 60 * 60 * 1000
                 })
-                .sendSuccess(`User logged success ${token}`)
+                .sendSuccess({ message: "User logged successfully", token })
         } catch (error) {
             res.status(500).sendServerError(error.message)
         }
