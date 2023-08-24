@@ -1,8 +1,10 @@
 const alreadyLogged = (req, res, next) => {
-    const { user } = req ?? null
+    const cookie = req.headers?.cookie ?? req.headers?.bearer
 
-    if (!user) return next()
+    if (cookie) {
+        return res.status(400).redirect('/products')
+    }
 
-    res.redirect('/products')
+    next()
 }
 module.exports = alreadyLogged
