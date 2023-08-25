@@ -34,12 +34,12 @@ class RouterClass {
             token = authHeader.split('=')[1]
         }
         //authorization: 'BEARER asdasda21d3a3(token)'
-        const { user: { userID, role, cartID, email } } = jwt.verify(token, SECRET_KEY)//la palabra secreta(en este caso "PalabraJWTSecreta", debería venir en una variable de entorno.)
+        const { UID, email, CID, role } = jwt.verify(token, SECRET_KEY)//la palabra secreta(en este caso "PalabraJWTSecreta", debería venir en una variable de entorno.)
 
         if (!policies.includes(role.toUpperCase())) return res.status(403).send({ status: 'error', payload: 'No permission' })
         //Si las politicas de la ruta no incluyen el rol que tiene el usuario, arroja que no tiene permisos de visitar la ruta.
 
-        req.user = { userID, role, cartID, email }
+        req.user = { role, CID, email, UID }
         next()
     }
 
