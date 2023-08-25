@@ -13,7 +13,7 @@ const TicketRepository = require("../repositories/ticket.repository.js");
 const ChatRepository = require('../repositories/chat.repo.js')
 const SessionRepository = require("../repositories/session.repository.js");
 
-const userService = new UserRepository(new UserDAO())
+const userService = new UserRepository(new UserDAO(), new CartDAO())
 const productService = new ProductRepository(new ProductDAO())
 const cartService = new CartRepository(new CartDAO())
 const ticketService = new TicketRepository(new TicketDAO())
