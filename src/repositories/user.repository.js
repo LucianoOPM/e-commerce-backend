@@ -1,22 +1,31 @@
-const UserDTO = require('../DTO/UsersDTO')
+const UserDto = require('../DTO/users/UsersDTO')
+const { createHash, isValidPass } = require('../utils/bcrypthash')
 
 class UserRepository {
-    constructor(dao) {
-        this.dao = dao
+    constructor(userDao, cartDao) {
+        this.userDao = userDao
+        this.cartDao = cartDao
     }
 
     getUsers = async (query) => {
         try {
-            //retirar la contraseña
-            const { docs, ...pagination } = await this.dao.getUsers(query)
-
-            let normalizedUser = []
-            for (let user of docs) {
-
-                const { password, ...userData } = new UserDTO(user)
-                normalizedUser.push(userData)
+            const { docs, ...pagination } = await this.userDao.getUsers(query)
+            if (docs.length === 0) {
+                return docs
             }
-            return { normalizedUser, pagination }
+            const normalizedUsers = docs.map(user => {
+                const { email, first_name, last_name, age, role, last_connection } = UserDto.getUserDto(user)
+
+                return {
+                    email,
+                    first_name,
+                    last_name,
+                    age,
+                    role,
+                    last_connection
+                }
+            })
+            return { normalizedUsers, pagination }
         } catch (error) {
             throw error
         }
@@ -24,11 +33,21 @@ class UserRepository {
 
     addUser = async (userData) => {
         try {
+            const { email } = userData
+            const alreadyRegistered = await this.userDao.findUser(email)
 
-            const newUser = await this.dao.addUser(userData)
+            if (alreadyRegistered) {
+                throw new Error('Error creating a new user')
+            }
+            const hashPassword = await createHash(userData.password)
+            const { _id } = await this.cartDao.newCart({})
+            userData.password = hashPassword
+            userData.cartID = _id
+            const newUser = await this.userDao.addUser(userData)
 
-            const { password, ...user } = new UserDTO(newUser)
-            return user
+            const { password, ...neededValues } = UserDto.getUserDto(newUser)
+
+            return neededValues
         } catch (error) {
             throw error
         }
@@ -41,12 +60,12 @@ class UserRepository {
      */
     findUser = async (userInfo) => {
         try {
-            const user = await this.dao.findUser(userInfo)
-
-            if (!user) return null
-
-            const { password, ...nonSensitiveUser } = new UserDTO(user)
-            return { password, nonSensitiveUser }
+            const user = await this.userDao.findUser(userInfo)
+            if (user) {
+                const { password, ...normalizedUser } = UserDto.getUserDto(user)
+                return normalizedUser
+            }
+            throw new Error('User not found')
         } catch (error) {
             throw error
         }
@@ -54,9 +73,12 @@ class UserRepository {
 
     updateUser = async (UID, body) => {
         try {
-            const updatedUser = await this.dao.updateUser(UID, body)
-            const { password, ...user } = new UserDTO(updatedUser)
-            return user
+            const updatedUser = await this.userDao.updateUser(UID, body)
+            if (updatedUser) {
+                const { password, ...user } = UserDto.getUserDto(updatedUser)
+                return user
+            }
+            throw new Error('User not found')
         } catch (error) {
             throw error
         }
@@ -64,7 +86,7 @@ class UserRepository {
 
     updateDocuments = async (uid, documents) => {
         try {
-            return await this.dao.updateDocuments(uid, documents)
+            return await this.userDao.updateDocuments(uid, documents)
         } catch (error) {
             throw new Error(error)
         }
@@ -72,15 +94,35 @@ class UserRepository {
 
     deleteUser = async (uid) => {
         try {
-            return this.dao.deleteUser(uid)
+            const deleted = await this.userDao.deleteUser(uid)
+            if (deleted) {
+                await this.cartDao.deleteCart(deleted.cartID)
+                const { password, ...user } = UserDto.getUserDto(deleted)
+                return user
+            }
+            throw new Error('user not found')
         } catch (error) {
             throw error
         }
     }
 
-    changePassword = async ({ email, newPassword }) => {
+    changePassword = async (email, newPassword) => {
         try {
-            return await this.dao.changePassword({ email, newPassword })
+            const user = await this.userDao.findUser(email)
+            if (!user) {
+                throw new Error('Something gone wrong')
+            }
+
+            const samePass = await isValidPass(newPassword, user.password)
+            if (samePass) {
+                throw new Error("Can't change a password for the same password")
+            }
+
+            const hashPassword = await createHash(newPassword)
+            const update = await this.userDao.updateUser(user._id, { password: hashPassword })
+
+            const { password, ...userWNewPass } = UserDto.getUserDto(update)
+            return userWNewPass
         } catch (error) {
             throw error
         }
