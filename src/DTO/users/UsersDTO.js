@@ -13,7 +13,9 @@ class UserDto {
             CID: user.cartID.toString(),
             age: this.#ageCalculator(user.birthdate),
             role: user.role,
-            password: user.password
+            password: user.password,
+            last_connection: user.last_connection,
+            documents: user.documents
         }
     }
 }
