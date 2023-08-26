@@ -18,6 +18,11 @@ class SessionRepository {
         return "Invalid credentials"
       }
 
+      const last_connection = {
+        last_connection: new Date().toLocaleString('es-MX')
+      }
+      await this.userDao.updateUser(user._id, last_connection)
+
       const { password: dtoPassword, first_name, last_name, age, ...neededUserInfo } = UserDto.getUserDto(user)
       return neededUserInfo
     } catch (error) {
@@ -51,6 +56,10 @@ class SessionRepository {
       const user = await this.userDao.findUser(email)
 
       if (user) {
+        const last_connection = {
+          last_connection: new Date().toLocaleString('es-MX')
+        }
+        await this.userDao.updateUser(user._id, last_connection)
         const { password, first_name, last_name, age, ...neededUserInfo } = UserDto.getUserDto(user)
         return neededUserInfo
       }
