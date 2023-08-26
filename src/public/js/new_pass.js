@@ -24,17 +24,25 @@ passBtn.addEventListener('click', (e) => {
             text: 'Password values doesnt match'
         })
     }
+    if ((newPass.value.length > 8 && confirmPass.value.length > 8) && (newPass.value === confirmPass.value)) {
+        fetch(`http://localhost:8080/api/users/restore/${UID}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ password: newPass.value })
+        })
+            .then(res => res.json())
+            .then(info => console.log(info))
+            .catch(err => console.log(err))
 
-    fetch(`http://localhost:8080/api/users/restore/${UID}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ password: newPass.value })
-    })
-        .then(res => res.json())
-        .then(info => console.log(info))
-        .catch(err => console.log(err))
+        newPassForm.reset()
+    } else {
+        Swal.fire({
+            title: "Error",
+            icon: "error",
+            "text": "Something gone wrong"
+        })
+    }
 
-    newPassForm.reset()
 })
