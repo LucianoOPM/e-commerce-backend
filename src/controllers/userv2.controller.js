@@ -27,7 +27,7 @@ class UserController {
             const searchQuery = querySearch(req.query, "users")
 
             //Ejecuta la query
-            const searchUser = await userService.getUsers(searchQuery)
+            const { UID, CID, ...searchUser } = await userService.getUsers(searchQuery)
 
             //Arroja el resultado a la paginación
             res.status(200).sendSuccess(searchUser)
@@ -46,12 +46,10 @@ class UserController {
 
             //Efectua la busqueda por UID
             const user = await userService.findUser(UID)
-
-
             if (!user) return res.status(404).sendUserError("User not found")
 
             //Arroja el resultado
-            res.status(200).sendSuccess(user.nonSensitiveUser)
+            res.status(200).sendSuccess(user)
         } catch (error) {
             next(error)
         }
@@ -60,39 +58,19 @@ class UserController {
     post = async (req, res, next) => {
         try {
             //Extrae los valores del req.body
-            const { first_name, last_name, email, password, birthdate } = req.body
+            const userInfo = req.body
 
             //Si faltan algunos de estos valores, retorna un error
-            if (!first_name || !last_name || !email || !password || !birthdate) throw new Error('Empty Values')
+            if (!userInfo.first_name || !userInfo.last_name || !userInfo.email || !userInfo.password || !userInfo.birthdate) throw new Error('Empty Values')
 
             const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            if (!emailRegExp.test(email)) throw new Error('email is not a valid value')
+            if (!emailRegExp.test(userInfo.email)) throw new Error('email is not a valid value')
             //Si no faltan valores, efectua una busqueda por email para validar que el usuario no este registrado en la base de datos.
-            const userExists = await userService.findUser(email)
-
-            //Si está, ejecuta un error
-            if (userExists) throw new Error('User Already Exists')
-
-            //Si no está, genera un carrito nuevo y se le asigna al usuario.
-            const { _id } = await cartService.newCart()
-
-            //Guarda el usuario en la base de datos
-            const registeredUser = await userService.addUser({
-                first_name,
-                last_name,
-                email,
-                cartID: _id,
-                birthdate,
-                password: await createHash(password),
-                role: email == "adminCoder@coder.com" ? "ADMIN" : "user" //Validacion de que si el usuario registrado es "admin coder" se le asigna el rol de admin
-            })
-
-            //Genera un token
-            const token = generateToken({ user: { userID: registeredUser.userID, role: registeredUser.role, cartID: registeredUser.cartID, email: registeredUser.email } })
+            const newUser = await userService.addUser(userInfo)
 
             //Entrega el token a la cookie "coderCookieToken" y le asigna la configuración
-            res.status(200).sendSuccess({ message: 'User registered Successfully', token })
+            res.status(200).sendSuccess({ message: 'User registered Successfully', newUser })
         } catch (error) {
             next(error)
         }
@@ -101,7 +79,7 @@ class UserController {
     put = async (req, res, next) => {
         try {
             //Valores que se permitirán cambiar al usuario
-            const acceptedBody = ["first_name", "last_name", "birthdate"]
+            const acceptedBody = ["birthdate", "first_name", "last_name"]
 
             //Extrae el UID y el body del req
             const { params: { UID }, body } = req
@@ -116,17 +94,10 @@ class UserController {
             if (validBody) throw new Error("Some keys doesn't match with allowed key user values")//Valida que las modificaciones implementadas sean validas.
 
             //Efectua los cambio y se extraen las propiedades que se utilizarán para generar el token (No extraer la constraseña o información sensible)
-            const { cartID, role, email, userID } = await userService.updateUser(UID, body)
-
-            //Genera el token
-
-            const token = generateToken({ user: { cartID, role, email, userID } })
+            const updatedUser = await userService.updateUser(UID, body)
 
             //Guarda el nuevo token generado en las cookies
-            res.status(200).cookie('coderCookieToken', token, {
-                httpOnly: true,
-                maxAge: 60 * 60 * 100
-            }).sendSuccess({ message: "User updated", token })
+            res.status(200).sendSuccess({ message: "User updated", updatedUser })
         } catch (error) {
             next(error)
         }
@@ -138,18 +109,18 @@ class UserController {
             if (!isValidObjectId(UID)) {
                 throw new Error('UID is not a valid object ID')
             }
-            const { nonSensitiveUser } = await userService.findUser(UID) ?? {}
+            const user = await userService.findUser(UID)
 
-            if (!nonSensitiveUser) {
+            if (!user) {
                 throw new Error("User doesn't exists")
             }
 
-            if (nonSensitiveUser.documents.length < 3 && nonSensitiveUser.role === "user") {
+            if (user.documents.length < 3 && user.role === "user") {
                 throw new Error('User must have all the documentation to be able to upgrade its account.')
             }
 
-            nonSensitiveUser.role == "user" ? nonSensitiveUser.role = "premium" : nonSensitiveUser.role === "premium" ? nonSensitiveUser.role = "user" : null
-            const newRole = await userService.updateUser(UID, nonSensitiveUser)
+            user.role == "user" ? user.role = "premium" : user.role === "premium" ? user.role = "user" : null
+            const newRole = await userService.updateUser(UID, user)
 
             res.status(200).sendSuccess(newRole)
         } catch (error) {
@@ -164,15 +135,42 @@ class UserController {
 
             //Valida que el UID sea un objectID válido
             if (!isValidObjectId(UID)) throw new Error('UID is not a valid ObjectId')
-            const { nonSensitiveUser: { userID, cartID } } = await userService.findUser(UID)
+            const deleted = await userService.deleteUser(UID)
 
-            if (!userID) throw new Error('User has not found')
+            res.status(200).sendSuccess({ message: "User deleted successfully", deleted })
+        } catch (error) {
+            next(error)
+        }
+    }
 
-            //Elimina al usuario según el UID otorgado
-            await cartService.deleteCart(cartID)
-            await userService.deleteUser(userID)
+    deleteUsers = async (req, res, next) => {
+        try {
+            const { normalizedUsers } = await userService.getUsers({})
+            const usersToDelete = normalizedUsers.filter((user) => {
+                const splitedLast_Connection = user.last_connection.split(",")
+                const last_connectionDate = splitedLast_Connection[0].split("/").reverse().join("-")
+                const last_connection = last_connectionDate.concat(splitedLast_Connection[1])
 
-            res.status(200).sendSuccess('User deleted successfully')
+                /*Para los días*/
+                // const userLastConnectionDate = new Date(last_connection)
+                // const days = 1000 * 60 * 60 * 24
+                const userLastConnectionHour = new Date(last_connection)
+                const actualHour = new Date()
+
+                const minutes = 1000 * 60
+
+                return parseInt((actualHour - userLastConnectionHour) / minutes) >= 30
+            })
+
+            const HTML = `<p>Your account was been deleted for inactivity</p>`
+
+            usersToDelete.forEach(async user => {
+                const { UID } = await userService.findUser(user.email)
+                await userService.deleteUser(UID)
+                sendMail(user.email, "inactivity", HTML)
+            });
+
+            res.status(200).sendSuccess('Users deleted')
         } catch (error) {
             next(error)
         }
@@ -182,14 +180,18 @@ class UserController {
         try {
             const { body: { email } } = req
 
+            const emailRegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegExp.test(email)) throw new Error('email is not a valid value')
+
             const user = await userService.findUser(email)
-            const userID = user?.nonSensitiveUser.userID
 
-            if (!userID) throw new Error("Can't find the user")
+            if (!user) {
+                return res.status(404).sendUserError('Error changing password')
+            }
 
-            const token = signUrlToken({ userID })
-
-            const URL = `http://localhost:8080/restore/${userID}/${token}`
+            const token = signUrlToken(user)
+            const URL = `http://localhost:8080/restore/${token}`
 
             const html = `
                 <center>
@@ -214,16 +216,14 @@ class UserController {
 
     newPass = async (req, res, next) => {
         try {
-            const { params: { UID }, body: { password } } = req
-            const { nonSensitiveUser: { email }, password: hashedPassword } = await userService.findUser(UID)
+            const { email } = req.user
+            const { password } = req.body
+            const changePassword = await userService.changePassword(email, password)
 
-            const validPassword = await isValidPass(password, hashedPassword)
-            if (validPassword) throw new Error("Passwords are equal")
-
-            const newPassword = await createHash(password)
-            await userService.changePassword({ email, newPassword })
-
-            res.status(200).sendSuccess('Se cambió la contraseña')
+            if (!changePassword) {
+                return res.status(404).sendUserError("Something gone wrong")
+            }
+            return res.status(200).send('password changed successfully')
         } catch (error) {
             next(error)
         }
@@ -232,8 +232,8 @@ class UserController {
     document = async (req, res, next) => {
         try {
             const { params: { UID } } = req
-            const { nonSensitiveUser } = await userService.findUser(UID) ?? {}
-            if (!nonSensitiveUser) throw new Error('User not found')
+            const user = await userService.findUser(UID)
+            if (!user) throw new Error('User not found')
 
             const identify = req.files?.identify
             const address = req.files?.address
