@@ -12,10 +12,12 @@ class SessionRepository {
     try {
       const user = await this.userDao.findUser(email)
       if (!user) {
-        return "Invalid credentials"
+        throw new Error("Invalid credentials")
       }
-      if (!isValidPass(password, user.password)) {
-        return "Invalid credentials"
+      const access = await isValidPass(password, user.password)
+
+      if (!access) {
+        throw new Error("Invalid credentials")
       }
 
       const last_connection = {
