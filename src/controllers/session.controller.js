@@ -1,20 +1,16 @@
 const { generateToken } = require("../config/passportJWT")
-const { userService, cartService } = require("../services")
-const { isValidPass } = require("../utils/bcrypthash")
+const { sessionService } = require('../services/index')
 
 class SessionController {
     login = async (req, res) => {
         try {
             const bodyKeys = Object.keys(req.body)
+            const { body: { email, password } } = req
 
             if (bodyKeys.length === 0) return res.status(400).sendServerError('Empty values')
 
-            const { password, ...nonSensitiveUser } = await userService.findUser(req.body.email)
-            const rightPass = await isValidPass(req.body.password, password)
-
-            if (!rightPass) return res.status(400).sendServerError('User or password are wrong')
-
-            const token = generateToken(nonSensitiveUser)
+            const user = await sessionService.login(email, password)
+            const token = generateToken(user)
 
             res.status(200)
                 .cookie('coderCookieToken', token, {
@@ -29,11 +25,8 @@ class SessionController {
 
     logout = async (req, res) => {
         try {
-            const { userID } = req.user
-            const last_connection = {
-                last_connection: new Date().toLocaleString('es-MX')
-            }
-            const user = await userService.updateUser(userID, last_connection)
+            const { UID } = req.user
+            await sessionService.logout(UID)
             res
                 .clearCookie('coderCookieToken')
                 .redirect('/login')
@@ -44,34 +37,15 @@ class SessionController {
 
     github = async (req, res) => {
         try {
-            const findUser = await userService.findUser(req.user.email)
+            const { email, name } = req.user
+            const findUser = await sessionService.githubLogin(email, name)
 
-            if (!findUser) {//Si no encuentra el usuario
-                const { _id: cartID } = await cartService.newCart()
+            const token = generateToken(findUser)
 
-                const newUser = {
-                    first_name: req.user.name.split(' ')[0],
-                    last_name: req.user.name.split(' ')[1],
-                    email: req.user.email,
-                    password: req.user.password,
-                    cartID: cartID.toString()
-                }//Separamos sus valores
-
-                const { _id } = await userService.addUser(newUser)//Y lo guardamos en la base de datos
-                const token = generateToken({ user: _id.toString() })//Generamos un token
-
-                return res.status(200).cookie('coderCookieToken', token, {
-                    httpOnly: true,
-                    maxAge: 60 * 60 * 1000
-                }).sendSuccess(`user created ${token}`)//Y accede con github
-            }
-            //Si encuentra el usuario
-            const { nonSensitiveUser: { userID, cartID, role, email, first_name, last_name } } = findUser//Separamos sus datos
-            const token = generateToken({ user: { userID, cartID, role, email, first_name, last_name } })
-            return res.status(200).cookie('coderCookieToken', token, {
+            res.status(200).cookie('coderCookieToken', token, {
                 httpOnly: true,
                 maxAge: 60 * 60 * 1000
-            }).redirect('/products')//Generamos una cookie con sus datos no vulnerables.
+            }).redirect('/products')
         } catch (error) {
             if (error) return error
         }
@@ -79,12 +53,8 @@ class SessionController {
 
     currentSession = async (req, res) => {
         try {
-            const { nonSensitiveUser: { first_name, last_name, userID, cartID, role, age } } = await userService.findUser(req.user.email)
-            res.status(200).sendSuccess({
-                user: {
-                    first_name, last_name, userID, cartID, role, age
-                }
-            })
+            const user = await sessionService.currentSession(req.user.email)
+            res.status(200).sendSuccess(user)
         } catch (error) {
             return res.status(500).sendServerError(error.message)
         }
