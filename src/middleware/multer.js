@@ -16,10 +16,14 @@ const storage = multer.diskStorage({
         }
         if (file.fieldname == "profile") {
             const parentFolder = path.join(__dirname, "..", "public/assets")
+            const refPath = `${parentFolder}/profiles/${UID}`
+            await createFolder(refPath)
             cb(null, `${parentFolder}/profiles/${UID}`)
         }
         if (file.fieldname == "product") {
             const parentFolder = path.join(__dirname, "..", "public/assets")
+            const refPath = `${parentFolder}/products/${UID}`
+            await createFolder(refPath)
             cb(null, `${parentFolder}/products/${UID}`)
         }
     },
