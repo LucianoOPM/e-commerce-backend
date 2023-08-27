@@ -20,12 +20,12 @@ class SessionRepository {
         throw new Error("Invalid credentials")
       }
 
-      const last_connection = {
+      const connection = {
         last_connection: new Date().toLocaleString('es-MX')
       }
-      await this.userDao.updateUser(user._id, last_connection)
+      await this.userDao.updateUser(user._id, connection)
 
-      const { password: dtoPassword, first_name, last_name, age, ...neededUserInfo } = UserDto.getUserDto(user)
+      const { password: dtoPassword, first_name, last_name, age, last_connection, documents, ...neededUserInfo } = UserDto.getUserDto(user)
       return neededUserInfo
     } catch (error) {
       throw new Error(error.message)
