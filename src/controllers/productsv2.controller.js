@@ -1,12 +1,13 @@
 const { isValidObjectId } = require("mongoose");
-const { productService } = require("../services");
+const { productService, userService } = require("../services");
 const querySearch = require("../utils/querySearch");
 const pageBuilder = require("../utils/pageBuilder");
 const fileUrl = require("../utils/fileUrl");
 const CustomErrors = require("../services/errors/CustomErrors");
 const productEnumError = require("../services/errors/enumError");
 const { nullOrEmptyValues, repetedProductError } = require("../services/errors/productsErrorMessage");
-const logger = require('../config/logger.js')
+const logger = require('../config/logger.js');
+const sendMail = require("../utils/sendEmail");
 
 class ProductController {
     get = async (req, res) => {
@@ -53,7 +54,7 @@ class ProductController {
 
     post = async (req, res, next) => {
         try {
-            let { body: { title, description, price, code, stock, category }, user: { userID } } = req
+            let { body: { title, description, price, code, stock, category }, user: { UID } } = req
 
             if (!title.trim() || !price || !code || !stock || !category || !description) {
                 CustomErrors.productError({
@@ -85,7 +86,7 @@ class ProductController {
                 category,
                 status,
                 thumbnail: fileLocation ? [fileLocation] : [],
-                owner: userID
+                owner: UID
             }
             const addProduct = await productService.create(newProduct)
 
@@ -151,6 +152,12 @@ class ProductController {
                     deleteProduct,
                     message: 'Product has been deleted'
                 })
+            }
+            const { email, role: ownerProductRole } = await userService.findUser(findProduct.owner)
+
+            if (ownerProductRole === "premium") {
+                const HTML = `<p>Su producto ${findProduct.title} con el ID ${findProduct.PID} ah sido eliminado.</p>`
+                sendMail(email, "producto eliminado", HTML)
             }
 
             const deleteProduct = await productService.delete(pid)
