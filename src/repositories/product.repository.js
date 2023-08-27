@@ -7,14 +7,9 @@ class ProductRepository {
 
     paginate = async (req) => {
         try {
-
             const { docs, ...pagination } = await this.dao.getProducts(req)
 
-            const products = []
-            for (let product of docs) {
-                const { ...productsValues } = new ProductDTO(product)
-                products.push(productsValues)
-            }
+            const products = ProductDTO.getProducts(docs)
 
             return { products, pagination }
         } catch (error) {
@@ -24,7 +19,12 @@ class ProductRepository {
 
     getById = async (PID) => {
         try {
-            return await this.dao.getProductById(PID)
+            const doc = await this.dao.getProductById(PID)
+            if (!doc) {
+                throw new Error('Product not found')
+            }
+            const product = ProductDTO.getProduct(doc)
+            return product
         } catch (error) {
             throw error
         }
