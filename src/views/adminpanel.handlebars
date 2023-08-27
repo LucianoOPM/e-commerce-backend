@@ -9,6 +9,7 @@
       <table class="table table-hover">
         <thead>
           <tr>
+            <th scope="col">UID</th>
             <th scope="col">First Name</th>
             <th scope="col">User Rol</th>
             <th scope="col">Email</th>
@@ -21,6 +22,7 @@
         <tbody>
           {{#each normalizedUsers}}
             <tr>
+              <td>{{this.UID}}</td>
               <td>{{this.first_name}}</td>
               <td>{{this.role}}</td>
               <td>{{this.email}}</td>
@@ -30,7 +32,7 @@
                 <button
                   type="button"
                   class="btn btn-success"
-                  id="subir{{this.email}}"
+                  id="subir{{this.UID}}"
                 >Subir Cuenta
                 </button>
               </td>
@@ -38,7 +40,7 @@
                 <button
                   type="button"
                   class="btn btn-danger"
-                  id="eliminar{{this.email}}"
+                  id="eliminar{{this.UID}}"
                 >Eliminar Cuenta</button>
               </td>
             </tr>
