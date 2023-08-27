@@ -25,7 +25,7 @@ class SessionRepository {
       }
       await this.userDao.updateUser(user._id, connection)
 
-      const { password: dtoPassword, first_name, last_name, age, last_connection, documents, ...neededUserInfo } = UserDto.getUserDto(user)
+      const { password: dtoPassword, age, last_connection, documents, ...neededUserInfo } = UserDto.getUserDto(user)
       return neededUserInfo
     } catch (error) {
       throw new Error(error.message)
