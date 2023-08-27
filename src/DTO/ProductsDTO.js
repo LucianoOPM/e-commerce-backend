@@ -1,15 +1,32 @@
 class ProductDto {
-    constructor(product) {
-        this.idProduct = product.id
-        this.owner = product.owner
-        this.title = product.title
-        this.description = product.description
-        this.price = product.price
-        this.thumbnails = product.thumbnail
-        this.code = product.code
-        this.status = product.status
-        this.stock = product.stock
-        this.category = product.category
+    static getProduct = product => {
+        return {
+            PID: product._id.toString(),
+            title: product.title,
+            description: product.description,
+            owner: product.owner,
+            price: product.price,
+            thumbnails: product.thumbnail,
+            code: product.code,
+            status: product.status,
+            category: product.category
+        }
+    }
+
+    static getProducts = productArray => {
+        return productArray.map(product => {
+            return {
+                PID: product.id,
+                title: product.title,
+                description: product.description,
+                owner: product.owner,
+                price: product.price,
+                thumbnails: product.thumbnail,
+                code: product.code,
+                status: product.status,
+                category: product.category
+            }
+        })
     }
 }
 
