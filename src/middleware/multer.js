@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
     },
     filename: function (req, file, cb) {
         if (DOCUMENTS.includes(file.fieldname)) {
-            cb(null, `${file.fieldname} - ${Date.now()}`)
+            cb(null, `${file.fieldname} - ${Date.now()} - ${file.originalname}`)
         }
         if (file.fieldname == "profile") {
             cb(null, `${Date.now()} - ${file.originalname}`)
