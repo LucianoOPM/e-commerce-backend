@@ -21,12 +21,13 @@ class ViewsRouter extends RouterClass {
         // this.get('/logout', ['PUBLIC'], views.logout)
         this.get('/register', ['PUBLIC'], authHeaders, alreadyLogged, views.register)//Funciona//Para todos los usuarios, pero si ya está logueado redirigir a productos
         this.get('/restore', ['PUBLIC'], views.restore)//Funciona
-        this.get('/restore/:UID/:token', ['PUBLIC'], validUrlToken, views.newPassword)
+        this.get('/restore/:token', ['PUBLIC'], validUrlToken, views.newPassword)
         /*Realtimeproducts*/
         this.get('/realtimeproducts', ['ADMIN', 'PREMIUM'], views.realtimeproducts)//Funciona//Sólo para personal autorizado(admins)
         /*chat*/
         this.get('/chat', ['USER', 'ADMIN'], views.chat)//Implementado, pero no funciona
         this.get('/cart/:cid', ['USER', 'ADMIN'], views.userCart)
+        this.get('/adminpanel', ["ADMIN"], views.adminPanel)
     }
 }
 
