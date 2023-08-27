@@ -14,15 +14,18 @@ class UserRepository {
                 return docs
             }
             const normalizedUsers = docs.map(user => {
-                const { email, first_name, last_name, age, role, last_connection } = UserDto.getUserDto(user)
-
+                const { email, first_name, last_name, age, role, last_connection, documents } = UserDto.getUserDto(user)
+                const documentsName = documents.map(document => {
+                    return document.name
+                }).join(" / ")
                 return {
                     email,
                     first_name,
                     last_name,
                     age,
                     role,
-                    last_connection
+                    last_connection,
+                    documents: documentsName
                 }
             })
             return { normalizedUsers, pagination }
