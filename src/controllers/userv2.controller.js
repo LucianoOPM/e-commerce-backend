@@ -1,36 +1,47 @@
 const { isValidObjectId } = require("mongoose");
-const { generateToken, signUrlToken } = require("../config/passportJWT");
-const { userService, cartService } = require("../services");//instancia del manager de mongo
-const { createHash, isValidPass } = require("../utils/bcrypthash");
-const querySearch = require("../utils/querySearch");
-const sendMail = require('../utils/sendEmail.js')
+const { signUrlToken } = require("../config/passportJWT");
+const { userService } = require("../services");//instancia del manager de mongo
+const sendMail = require('../utils/sendEmail.js');
+const pageBuilder = require("../utils/pageBuilder");
 
 class UserController {
     get = async (req, res, next) => {
         try {
-            //recuperamos las keys del objeto req.query
-            const queryKeys = Object.keys(req.query)
+            const { query: { sort = "asc", role, page = 1, limit = 10 } } = req
+            const VALID_ROLES = ["user", "admin", "premium"]
+            const VALID_SORT = ["-1", "1", "asc", "desc"]
 
-            //Si el req.query viene vacio, ejecuta una consulta general
-            if (queryKeys.length === 0) {
-                const emptyQuery = querySearch(req.query, "users")
-                const docs = await userService.getUsers(emptyQuery)
-                return res.status(200).sendSuccess(docs)
+            if (!VALID_SORT.includes(sort.toLowerCase())) {
+                throw new Error('Sort value is not valid')
             }
 
-            //Si el req.query no viene vacio, busca que venga con las palabras permitidas
-            const SEARCH_KEYS = ["role", "limit", "sort", "page"]
-            const successQuery = queryKeys.some(keys => SEARCH_KEYS.includes(keys))
-            if (!successQuery) throw new Error('Some keys missmatch with accepted search keys')
-
-            //Si contiene las palabras permitidas, ejecuta la función para formar la query
-            const searchQuery = querySearch(req.query, "users")
+            const searchQuery = []
+            const options = {
+                page: Number(page),
+                limit: Number(limit),
+                lean: true
+            }
+            if (role) {
+                if (!VALID_ROLES.includes(role.toLowerCase())) {
+                    throw new Error('Role is not a valid keyword')
+                }
+                role.toUpperCase() === "ADMIN" ? searchQuery.push({ role: role.toUpperCase() }) : searchQuery.push({ role: role.toLowerCase() })
+            } else {
+                searchQuery.push({})
+            }
+            if (!isNaN(sort)) {
+                options["sort"] = { first_name: Number(sort) }
+            } else {
+                options["sort"] = { first_name: sort }
+            }
+            searchQuery.push(options)
 
             //Ejecuta la query
-            const { UID, CID, ...searchUser } = await userService.getUsers(searchQuery)
+            const { normalizedUsers, pagination } = await userService.getUsers(searchQuery)
+            const urls = pageBuilder(req, pagination)
 
             //Arroja el resultado a la paginación
-            res.status(200).sendSuccess(searchUser)
+            res.status(200).sendSuccess({ docs: normalizedUsers, pagination: urls })
         } catch (error) {
             next(error)
         }
