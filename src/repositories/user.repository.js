@@ -7,7 +7,7 @@ class UserRepository {
         this.cartDao = cartDao
     }
 
-    getUsers = async (queryArray) => {
+    getUsers = async (queryArray = []) => {
         try {
             const { docs, ...pagination } = await this.userDao.getUsers(queryArray)
             if (docs.length === 0) {
