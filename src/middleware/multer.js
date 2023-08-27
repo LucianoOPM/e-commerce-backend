@@ -3,9 +3,9 @@ const path = require("node:path")
 const createFolder = require('../utils/createUserFolder')
 
 
+const DOCUMENTS = ["identify", "address", "bankStatement"]
 const storage = multer.diskStorage({
     destination: async function (req, file, cb) {
-        const DOCUMENTS = ["identify", "address", "bankStatement"]
         const { UID } = req.user
 
         if (DOCUMENTS.includes(file.fieldname)) {
@@ -23,8 +23,16 @@ const storage = multer.diskStorage({
             cb(null, `${parentFolder}/products/${UID}`)
         }
     },
-    filename: function (_req, file, cb) {
-        cb(null, `${Date.now()} - ${file.originalname}`)
+    filename: function (req, file, cb) {
+        if (DOCUMENTS.includes(file.fieldname)) {
+            cb(null, `${file.fieldname} - ${Date.now()}`)
+        }
+        if (file.fieldname == "profile") {
+            cb(null, `${Date.now()} - ${file.originalname}`)
+        }
+        if (file.fieldname === "product") {
+            cb(null, `${Date.now()} - ${file.originalname}`)
+        }
     }
 })
 
