@@ -1,4 +1,5 @@
-const { productService, cartService } = require("../services")
+const { productService, cartService, userService } = require("../services")
+const pageBuilder = require("../utils/pageBuilder")
 const pagination = require("../utils/pageBuilder")
 const querySearch = require("../utils/querySearch")
 
@@ -156,6 +157,25 @@ class ViewsController {
             res.status(200).render('cartView', cartRender)
         } catch (error) {
             res.status(500).sendServerError(error.message)
+        }
+    }
+
+    adminPanel = async (req, res, next) => {
+        try {
+            const { normalizedUsers, pagination } = await userService.getUsers()
+            const pages = pageBuilder(req, pagination)
+
+            normalizedUsers.map(user => user.documents = user.documents.join(" / "))
+
+            const render = {
+                normalizedUsers,
+                pages,
+                style: "adminpanel.css",
+                script: "adminpanel.js"
+            }
+            res.status(200).render("adminpanel", render)
+        } catch (error) {
+            next(error)
         }
     }
 }
