@@ -1,0 +1,51 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin panel</title>
+  </head>
+  <body>
+    <div class="table-responsive-lg">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">First Name</th>
+            <th scope="col">User Rol</th>
+            <th scope="col">Email</th>
+            <th scope="col">Last Connection</th>
+            <th scope="col">Documents</th>
+            <th scope="col">Subir Cuenta</th>
+            <th scope="col">Eliminar Cuenta</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each normalizedUsers}}
+            <tr>
+              <td>{{this.first_name}}</td>
+              <td>{{this.role}}</td>
+              <td>{{this.email}}</td>
+              <td>{{this.last_connection}}</td>
+              <td>{{this.documents}}</td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn-success"
+                  id="subir{{this.email}}"
+                >Subir Cuenta
+                </button>
+              </td>
+              <td>
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  id="eliminar{{this.email}}"
+                >Eliminar Cuenta</button>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    <script src="/static/js/{{script}}"></script>
+  </body>
+</html>
