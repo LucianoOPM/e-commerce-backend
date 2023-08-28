@@ -8,14 +8,14 @@ const { isValidObjectId } = require("mongoose")
  * @returns {Object|void}
  */
 const cartValidator = (req, res, next) => {
-    const { user: { cartID }, params: { CID } } = req
+    const { user: { CID: CID_user }, params: { CID: CID_param } } = req
 
-    if (!isValidObjectId(CID)) return res.status(400).send({
+    if (!isValidObjectId(CID_param)) return res.status(400).send({
         status: "Bad Request",
         payload: "Cart ID param isn't a valid Object ID"
     })
 
-    if (cartID !== CID) return res.status(400).send({
+    if (CID_user !== CID_param) return res.status(400).send({
         status: 'Bad Request',
         payload: "Cart ID doesn't match"
     })
