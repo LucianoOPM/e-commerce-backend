@@ -8,6 +8,7 @@ class ProductDto {
             price: product.price,
             thumbnails: product.thumbnail,
             code: product.code,
+            stock: product.stock,
             status: product.status,
             category: product.category
         }
@@ -23,6 +24,7 @@ class ProductDto {
                 price: product.price,
                 thumbnails: product.thumbnail,
                 code: product.code,
+                stock: product.stock,
                 status: product.status,
                 category: product.category
             }
