@@ -34,7 +34,7 @@ class CartController {
     addProducts = async (req, res) => {
         try {
             //Destructuración de los datos a manejar, id del carrito, id del producto y la cantidad que por default siempre será 1
-            const { params: { CID }, body, user: { userID } } = req
+            const { params: { CID }, body, user: { UID } } = req
 
             if (body.length === 0) throw new Error('Empty cart')
             let { products: cartProducts } = await cartService.get(CID) ?? {}
@@ -49,7 +49,7 @@ class CartController {
                 if (!isValidObjectId(CID) || !isValidObjectId(product)) throw new Error("Cart ID or Product ID is not a valid ID")
 
                 const productExists = await productService.getById(product)
-                if (productExists.owner.toString() !== userID) {
+                if (productExists.owner.toString() !== UID) {
                     //Validamos que el producto que estamos recibiendo, se encuentro o no dentro del carrito
                     const findProduct = cartProducts.findIndex(productsObject => productsObject.product._id.toString() === product)
 
@@ -60,7 +60,7 @@ class CartController {
                         await cartService.update(CID, product, quantity)
                     }
                 }
-                ownProduct = productExists.owner.toString() === userID ? "Se encontraron productos que le pertenecen a este usuario, se agregaron unicamente los productos que no le pertenecen" : "Productos agregadon o actualizados con éxito"
+                ownProduct = productExists.owner.toString() === UID ? "Se encontraron productos que le pertenecen a este usuario, se agregaron unicamente los productos que no le pertenecen" : "Productos agregadon o actualizados con éxito"
             }
 
             let { products } = await cartService.get(CID)
@@ -155,7 +155,7 @@ class CartController {
                     const { product, qty } = item
                     totalCompra += product.price * qty
                     await productService.update(product._id.toString(), { stock: product.stock - qty })
-                    await cartService.clear(req.user.cartID)
+                    await cartService.clear(req.user.CID)
 
                 })
                 const generateTicket = await ticketService.newTicket(randomUUID(), totalCompra, req.user.email)
@@ -165,7 +165,7 @@ class CartController {
             //Se guardan los productos que si están disponibles
             const buyableProducts = [];
 
-            products.forEach(async item => {
+            products.forEach(item => {
                 const findBuyable = unbuyableProducts.find(noStockProductsid => noStockProductsid === item.product._id.toString())
                 if (!findBuyable) buyableProducts.push(item)
             })
@@ -180,7 +180,7 @@ class CartController {
                 //actualizar los productos que si se compraron
                 await productService.update(product._id.toString(), { stock: product.stock - qty })
                 //Retirar del carrito los productos que si se compraron
-                await cartService.delProduct(req.user.cartID, product._id.toString())
+                await cartService.delProduct(req.user.CID, product._id.toString())
             }
             const generateTicket = await ticketService.newTicket(randomUUID(), totalCompra, req.user.email)
 
