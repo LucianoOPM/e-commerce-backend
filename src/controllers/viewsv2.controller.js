@@ -4,6 +4,24 @@ const pagination = require("../utils/pageBuilder")
 const querySearch = require("../utils/querySearch")
 
 class ViewsController {
+
+    home = async (req, res, next) => {
+        try {
+            const canUpload = req.user?.role === "ADMIN" || req.user?.role === "premium"
+            const isAdmin = req.user?.role === "ADMIN"
+            const logged = req.hasOwnProperty("user")
+            const renderObject = {
+                style: "home.css",
+                canUpload,
+                isAdmin,
+                logged,
+                script: "home.js"
+            }
+            res.render('home', renderObject)
+        } catch (error) {
+            next(error)
+        }
+    }
     products = async (req, res) => {
         try {
             const queryBuild = querySearch(req.query, "products")
@@ -24,7 +42,7 @@ class ViewsController {
                 addProducts: user?.role == 'ADMIN' || user?.role == 'premium' ? true : false,
                 first_name: user?.first_name,
                 last_name: user?.last_name,
-                cartID: user?.cartID
+                cartID: user?.CID
             }
 
             res.status(200).render('products', productsRender)
@@ -45,7 +63,7 @@ class ViewsController {
                 addProducts: user?.role === 'ADMIN' ? true : false,
                 first_name: user?.first_name,
                 last_name: user?.last_name,
-                cartID: user?.cartID,
+                cartID: user?.CID,
                 title: "E-Commerce",
                 product,
                 style: "product.css",
@@ -151,7 +169,9 @@ class ViewsController {
                 qty,
                 total: costoTotal,
                 style: "normalize.css",
-                title: `Cart ${cid}`
+                title: `Cart ${cid}`,
+                cartID: `${cid}`,
+                script: "cartPurchase.js"
             }
 
             res.status(200).render('cartView', cartRender)
