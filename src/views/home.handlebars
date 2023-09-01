@@ -1,0 +1,39 @@
+<header>
+  <nav class="home-menu">
+    <h1>E-Commerce</h1>
+    <ul>
+      <li>
+        <a href="/products">Productos</a>
+      </li>
+      <li>
+        <a href="/chat">Contacto</a>
+      </li>
+      <li>
+        <a href="/register">Registro</a>
+      </li>
+      {{#if logged}}
+        <li>
+          <a id="logout" href="/logout">Logout</a>
+        </li>
+      {{else}}
+        <li>
+          <a href="/login">Login</a>
+        </li>
+      {{/if}}
+      {{#if isAdmin}}
+        <li>
+          <a href="/adminpanel">Panel de Admin</a>
+        </li>
+      {{/if}}
+      {{#if canUpload}}
+        <li>
+          <a href="/realtimeproducts">Agregar Productos</a>
+        </li>
+      {{/if}}
+    </ul>
+  </nav>
+</header>
+<main>
+
+</main>
+<script src="/static/js/{{script}}"></script>
