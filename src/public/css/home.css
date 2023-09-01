@@ -1,0 +1,32 @@
+.home-menu{
+  height: 80%;
+  width: 15%;
+  border: 5px black solid;
+  border-radius: 100% 0% 100% 0% / 0% 60% 40% 100% ;
+  position: absolute;
+  left: 5%;
+  top: 5%;
+  background-color:  #A0C49D;
+}
+
+.home-menu li{
+  list-style: none;
+}
+
+.home-menu a {
+  position: relative;
+  top: 50px;
+  text-decoration: none;
+  color: black;
+  font-size:x-large;
+}
+
+.home-menu h1 {
+  position: relative;
+  left: 20px;
+  top: 10px;
+}
+
+body{
+  background-color: #C4D7B2;
+}
