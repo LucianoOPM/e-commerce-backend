@@ -11,6 +11,7 @@ const views = new ViewsController()
 class ViewsRouter extends RouterClass {
     /*QUIEN PUEDE ACCEDER A LAS VISTAS*/
     init() {
+        this.get('/', ['PUBLIC'], authHeaders, views.home)
         this.get('/docs', ['PUBLIC'], swagger.setup(swaggerJSOption))
         /*Views de products*/
         this.get('/products', ['PUBLIC'], authHeaders, views.products)//Funciona
