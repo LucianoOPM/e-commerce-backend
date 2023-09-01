@@ -67,7 +67,7 @@ class ViewsController {
                 title: "E-Commerce",
                 product,
                 style: "product.css",
-                script: "viewProducts.js"
+                script: "productView.js"
             }
 
             res.status(200).render('productViews', productView)
