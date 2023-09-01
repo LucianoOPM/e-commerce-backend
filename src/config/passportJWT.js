@@ -52,7 +52,7 @@ const authHeaders = (req, _res, next) => {
 
     if (cookieHeader.includes('=')) {
         const token = cookieHeader.split('=')[1]
-        const { user } = jwt.verify(token, SECRET_KEY)
+        const user = jwt.verify(token, SECRET_KEY)
         req.user = user
         next()
     }
