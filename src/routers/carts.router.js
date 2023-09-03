@@ -12,7 +12,7 @@ class CartRouter extends RouterClass {
         this.delete('/:CID', ['PUBLIC'], cart.delete)//Funciona
         this.put('/:CID/product/:PID', ['PUBLIC'], cart.updateProduct)//Funciona
         this.delete('/:CID/product/:PID', ['PUBLIC'], cart.deleteProduct)//Funciona
-        this.post('/:CID/purchase', ['USER', "ADMIN"], cart.purchase)//Funciona
+        this.post('/:CID/purchase', ['USER', "PREMIUM", "ADMIN"], cart.purchase)//Funciona
     }
 }
 
