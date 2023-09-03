@@ -1,0 +1,45 @@
+.test{
+  border: red solid 1px;
+}
+
+.navbar{
+  height: 100px;
+  background-color: #E1ECC8;
+  border-bottom: black 3px solid;
+}
+
+.usersName {
+  font-size: x-large;
+  position: absolute;
+  right: 50px;
+}
+
+main{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body{
+  background-color: #A0C49D;
+}
+
+.cart-content{
+  position: absolute;
+  top: 15%;
+  width: 50%;
+}
+
+.ul-menu li{
+  margin: 10px;
+}
+
+.logout{
+  position: absolute;
+  right: 19%;
+}
+
+.logout a {
+  text-decoration: none;
+  color: black;
+}
