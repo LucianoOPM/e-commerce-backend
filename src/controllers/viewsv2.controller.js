@@ -160,18 +160,23 @@ class ViewsController {
         try {
             const { cid } = req.params
             const { products, qty } = await cartService.get(cid)
-
+            const { first_name, last_name } = await userService.findUser(req.user?.email)
             const costoTotal = products.map(item => item.product.price * item.qty).reduce((acc, curr) => acc + curr, 0)
+            const canUpload = req.user?.role === "premium" || req.user?.role === "ADMIN"
+            const canPurchase = products.length > 0
 
             const cartRender = {
                 emptyCart: products.length < 1 ? true : false,
                 products,
                 qty,
                 total: costoTotal,
-                style: "normalize.css",
+                style: "carts.css",
                 title: `Cart ${cid}`,
                 cartID: `${cid}`,
-                script: "cartPurchase.js"
+                script: "cartPurchase.js",
+                userName: `${first_name} ${last_name}`,
+                canUpload,
+                canPurchase
             }
 
             res.status(200).render('cartView', cartRender)
