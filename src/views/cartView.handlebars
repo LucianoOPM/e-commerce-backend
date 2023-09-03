@@ -1,20 +1,74 @@
-<main>
-  <div>
-    {{#if emptyCart}}
-      <h1>Empty Cart</h1>
-    {{else}}
-      {{#each products}}
-        <ul>
-          <li>
-            <h3>Producto: {{product.title}}</h3>
-            <p>Costo: {{product.price}}</p>
-            <p>Cantidad: {{qty}}</p>
+<header>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarTogglerDemo01"
+        aria-controls="navbarTogglerDemo01"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+      </button>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+        <a class="navbar-brand" href="/products">E-Commerce</a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Carrito</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/chat">Contacto</a>
+          </li>
+          {{#if canUpload}}
+            <li class="nav-item">
+              <a class="nav-link" href="/realtimeproducts">Agregar Productos</a>
+            </li>
+          {{/if}}
         </ul>
-      {{/each}}
-      <p>Total de compra: {{total}}</p>
-
-      <button disabled>Comprar</button>
+        <div class="row logout">
+          <a href="/logout">Cerrar Session</a>
+        </div>
+        <div class="row usersName">
+          <span>Carrito de: {{userName}}</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<main>
+  <div class="list-group dropdown cart-content">
+    {{#each products}}
+      <button
+        type="button"
+        class="list-group-item list-group-item-action dropdown-toggle"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        {{product.title}}
+      </button>
+      <ul class="dropdown-menu ul-menu">
+        <li class="dropdown-item">Descripción: {{product.description}}</li>
+        <li class="dropdown-item">Precio: {{product.price}}</li>
+        <li class="dropdown-item">Cantidad: {{qty}}</li>
+      </ul>
+    {{/each}}
+    <p>Total de compra: {{total}}</p>
+    {{#if canPurchase}}
+      <button
+        class="btn btn-primary"
+        id="buyCart"
+        value="{{cartID}}"
+      >Comprar</button>
+    {{else}}
+      <button
+        class="btn btn-primary"
+        id="buyCart"
+        value="{{cartID}}"
+        disabled
+      >Comprar</button>
     {{/if}}
   </div>
+
+  <script src="/static/js/{{script}}"></script>
 </main>
