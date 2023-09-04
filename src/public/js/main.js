@@ -44,7 +44,7 @@ socket.on('server:renderProducts', async (data) => {
         <h2>${products.title}</h2>
         <h3>${products.description}</h3>
         <img src="${products.thumbnails}">
-        <p>ID: ${products.idProduct}</p>
+        <p>ID: ${products.PID}</p>
         <p>Costo: ${products.price}</p>
         <p>Disponibles: ${products.stock}</p>
         <p>${products.category}</p>
