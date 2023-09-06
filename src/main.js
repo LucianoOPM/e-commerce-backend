@@ -11,8 +11,7 @@ const initPassport = require('./config/passport.config.js')
 const errorMiddleware = require('./middleware/errors/indexError.js')
 const addLogger = require('./middleware/logger.midd.js')
 const logger = require('./config/logger.js')
-const webSocket = require('./utils/socketIo.js')
-const chatSocket = require('./utils/chatSocket.js')
+const onConnection = require('./socketIo/connectionSocket.js')
 
 //Ejecucion de funciones.
 const app = express()
@@ -34,8 +33,7 @@ passport.use(passport.initialize())
 //routers
 app.use(addLogger)
 app.use(main)
-webSocket(io)
-chatSocket(io)
+onConnection(io)
 app.use(errorMiddleware)
 
 /* exports.initServer = _ =>  */
