@@ -58,7 +58,6 @@ const [idProduct, delButton] = deleteProduct
 delButton.addEventListener('click', (e) => {
     e.preventDefault()
 
-
     const confirmar = confirm(`ATENCION!!!\n¿Esta seguro de eliminar el producto con ID: ${idProduct.value}?`)
 
     if (confirmar) {
