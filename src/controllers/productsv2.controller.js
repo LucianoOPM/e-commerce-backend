@@ -144,7 +144,7 @@ class ProductController {
             if (!findProduct) throw new Error('Product missmatch')
 
             if (role.toLowerCase() !== 'admin') {
-                if (findProduct.owner.toString() !== userID) {
+                if (findProduct.owner !== userID) {
                     throw new Error("No permissions")
                 }
                 const deleteProduct = await productService.delete(pid)
@@ -153,11 +153,13 @@ class ProductController {
                     message: 'Product has been deleted'
                 })
             }
-            const { email, role: ownerProductRole } = await userService.findUser(findProduct.owner)
 
-            if (ownerProductRole === "premium") {
-                const HTML = `<p>Su producto ${findProduct.title} con el ID ${findProduct.PID} ah sido eliminado.</p>`
-                sendMail(email, "producto eliminado", HTML)
+            if (findProduct.owner !== "ADMIN") {
+                const { email, role: ownerProductRole } = await userService.findUser(findProduct.owner)
+                if (ownerProductRole === "premium") {
+                    const HTML = `<p>Su producto ${findProduct.title} con el ID ${findProduct.PID} ah sido eliminado.</p>`
+                    sendMail(email, "producto eliminado", HTML)
+                }
             }
 
             const deleteProduct = await productService.delete(pid)
