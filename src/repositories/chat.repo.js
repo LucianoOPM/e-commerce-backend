@@ -5,7 +5,7 @@ class ChatRepository {
 
     addMessage = async (data) => {
         try {
-            this.dao.addMessage(data)
+            return await this.dao.addMessage(data)
         } catch (error) {
             throw new Error(error.message)
         }
@@ -19,9 +19,26 @@ class ChatRepository {
         }
     }
 
-    getLastMessage = async (userName) => {
+    getChat = async (email) => {
         try {
-            return await this.dao.readLastMessage(userName)
+            return this.dao.getChat(email)
+        } catch (e) {
+            throw new Error(e.message)
+        }
+    }
+
+    getLastMessage = async (email) => {
+        try {
+            const { messages } = await this.dao.readLastMessage(email)
+            return messages[messages.length - 1]
+        } catch (error) {
+            throw new Error(error.message)
+        }
+    }
+
+    createChat = async (user) => {
+        try {
+            await this.dao.newChat(user)
         } catch (error) {
             throw new Error(error.message)
         }
