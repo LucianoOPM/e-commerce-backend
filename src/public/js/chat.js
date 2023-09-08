@@ -19,3 +19,11 @@ socket.on('server:message', async (data) => {
 socket.on('connect_error', (err) => {
     console.log(err.message)
 })
+
+socket.on("server:noCookie", async (data) => {
+    Swal.fire({
+        title: "Error",
+        icon: "error",
+        text: data
+    })
+})
