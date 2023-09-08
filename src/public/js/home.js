@@ -9,9 +9,7 @@ logout.addEventListener('click', e => {
       "Content-Type": "application/json"
     }
   })
-    .then(res => res.json())
     .then(res => {
-      console.log(res)
       return window.location.href = '/products'
     })
     .catch(err => console.log(err))
