@@ -6,7 +6,7 @@ const errorMiddleware = (err, req, res, next) => {
     if (errors.includes(err.code)) {
         res.status(400).sendUserError({ err, message: err.message })
     } else {
-        res.status(400).sendUserError({ name: err.name, message: err.message })
+        res.status(400).json({ name: err.name, message: err.message })
     }
     logger.fatal({ message: err.message })
 }
