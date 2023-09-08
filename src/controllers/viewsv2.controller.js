@@ -144,10 +144,12 @@ class ViewsController {
 
     chat = async (req, res) => {
         try {
+            const cartID = req.user?.CID
             const rend = {
                 title: "Contacto",
                 script: "chat.js",
-                style: "chat.css"
+                style: "chat.css",
+                cartID
             }
 
             res.status(200).render('chat', rend)
