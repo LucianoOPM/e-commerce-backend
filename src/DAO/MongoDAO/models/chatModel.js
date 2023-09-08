@@ -9,10 +9,10 @@ const chatSchema = new Schema({
         unique: true,
         index: true
     },
-    message: [{
+    messages: [{
         _id: false,
-        date: String,
-        content: String
+        date: { type: String },
+        message: { type: String }
     }]
 })
 
@@ -21,32 +21,3 @@ const messageModel = model(collection, chatSchema)
 module.exports = {
     messageModel
 }
-
-/*
-
-[
-    {
-        _id: mongoID,
-        user: fulano,
-        mensajes:[
-            {
-                fecha: 29-09-15,
-                hora: 23:03:09,
-                mensaje: "Hola a todos."
-            }
-        ]
-    },
-    {
-        _id: MongoID2,
-        user: fulano2,
-        mensajes:[
-            {
-                fecha: 29-09-15,
-                hora: 23:03:10,
-                mensaje: "Hola fulano."
-            }
-        ]
-    }
-]
-
-*/
