@@ -37,3 +37,20 @@ if (buyBtn) {
       })
   })
 }
+
+const logoutButton = document.querySelector('#logout')
+
+logoutButton.addEventListener('click', (e) => {
+  e.preventDefault()
+
+  fetch('/api/session/logout', {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(data => {
+      window.location.href = "/products"
+    })
+    .catch(err => console.log(err))
+})
