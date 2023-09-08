@@ -12,7 +12,9 @@ const chatIo = async (io, socket) => {
       }
       next()
     })
-
+    if (!cookie) {
+      throw new Error("No cookie on client")
+    }
     const token = cookie.split('=')[1]
     const user = authUrl(token)
     const { email, first_name, last_name, role } = user
@@ -34,7 +36,7 @@ const chatIo = async (io, socket) => {
     })
 
   } catch (error) {
-    console.log(error.message)
+    socket.emit('server:noCookie', error.message)
   }
 }
 
