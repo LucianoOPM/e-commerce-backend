@@ -3,12 +3,17 @@ const { messageModel } = require('../MongoDAO/models/chatModel.js')
 class ChatManagerMongo {
     newChat = async (user) => {
         try {
-            if (!user) {
-                return `No hay usuario que ingresar`
-            }
-            return await messageModel.create(user)
+            return await messageModel.create({ user: user })
         } catch (error) {
             return `ERROR: ${error}`
+        }
+    }
+
+    getChat = async (email) => {
+        try {
+            return await messageModel.findOne({ user: email })
+        } catch (error) {
+            throw new Error(error.message)
         }
     }
 
@@ -19,23 +24,16 @@ class ChatManagerMongo {
             throw new Error(error.message)
         }
     }
-    addMessage = async (data) => {
+    addMessage = async ({ email, message }) => {
         try {
-            const { userName, newMsg } = data
-            if (userName) {
-                await messageModel.updateOne({ user: userName }, { $push: { message: { date: new Date(), content: newMsg } } })
-            }
-
+            return await messageModel.updateOne({ user: email }, { $push: { messages: { date: new Date(), message: message } } })
         } catch (error) {
             return `ERROR: ${error}`
         }
     }
-    readLastMessage = async (uname) => {
+    readLastMessage = async (email) => {
         try {
-            const userMsg = await messageModel.find({ user: uname }, { message: { $slice: -1 } })
-            const { user, message } = userMsg[0]
-
-            return { user, message }
+            return await messageModel.findOne({ user: email })
         } catch (error) {
             return `ERROR: ${error}`
         }
