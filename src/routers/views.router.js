@@ -18,15 +18,15 @@ class ViewsRouter extends RouterClass {
         this.get('/products/:PID', ['PUBLIC'], authHeaders, views.productsById)//Funciona
         /*Views session*/
         /*Login*/
-        this.get('/login', ['PUBLIC'], authHeaders, alreadyLogged, views.login)//Funciona//Para todos los usuarios, pero si ya está logueado, redirigir a productos
+        this.get('/login', ['PUBLIC'], alreadyLogged, views.login)//Funciona//Para todos los usuarios, pero si ya está logueado, redirigir a productos
         // this.get('/logout', ['PUBLIC'], views.logout)
-        this.get('/register', ['PUBLIC'], authHeaders, alreadyLogged, views.register)//Funciona//Para todos los usuarios, pero si ya está logueado redirigir a productos
+        this.get('/register', ['PUBLIC'], alreadyLogged, views.register)//Funciona//Para todos los usuarios, pero si ya está logueado redirigir a productos
         this.get('/restore', ['PUBLIC'], views.restore)//Funciona
         this.get('/restore/:token', ['PUBLIC'], validUrlToken, views.newPassword)
         /*Realtimeproducts*/
         this.get('/realtimeproducts', ['ADMIN', 'PREMIUM'], views.realtimeproducts)//Funciona//Sólo para personal autorizado(admins)
         /*chat*/
-        this.get('/chat', ['USER', 'PREMIUM', 'ADMIN'], views.chat)//Implementado, pero no funciona
+        this.get('/chat', ['USER', 'PREMIUM', 'ADMIN'], views.chat)
         this.get('/cart/:cid', ['USER', 'PREMIUM', 'ADMIN'], views.userCart)
         this.get('/adminpanel', ["ADMIN"], views.adminPanel)
     }

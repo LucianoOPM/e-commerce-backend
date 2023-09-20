@@ -47,7 +47,7 @@ const authToken = async (req, res, next) => {
 }
 
 const authHeaders = (req, _res, next) => {
-    const cookieHeader = req.headers.cookie ?? req.headers.authorization ?? null
+    const cookieHeader = req.headers.cookie || req.headers.authorization || false
     if (!cookieHeader) return next()
 
     if (cookieHeader.includes('=')) {

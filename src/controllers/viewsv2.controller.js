@@ -28,7 +28,7 @@ class ViewsController {
             const { products, pagination: pages } = await productService.paginate(queryBuild)
             const { prevLink, nextLink } = pagination(req, pages)
 
-            const user = req?.user ?? null
+            const { user } = req
 
             const productsRender = {
                 logged: user ? false : true,
@@ -38,7 +38,7 @@ class ViewsController {
                 nextLink,
                 prevLink,
                 script: "viewProducts.js",
-                role: user?.role ?? 'Invitado',
+                role: user?.role,
                 addProducts: user?.role == 'ADMIN' || user?.role == 'premium' ? true : false,
                 first_name: user?.first_name,
                 last_name: user?.last_name,
